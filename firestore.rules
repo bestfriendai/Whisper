@@ -1,0 +1,214 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isValidEmail() {
+      return isAuthenticated() && request.auth.token.email_verified == true;
+    }
+    
+    function hasRole(role) {
+      return isAuthenticated() && request.auth.token.role == role;
+    }
+    
+    function isAdmin() {
+      return hasRole('admin');
+    }
+    
+    function isModerator() {
+      return hasRole('moderator') || isAdmin();
+    }
+    
+    function isNotBanned() {
+      return isAuthenticated() && 
+        !exists(/databases/$(database)/documents/banned_users/$(request.auth.uid));
+    }
+    
+    function isValidReview() {
+      return request.resource.data.keys().hasAll(['authorId', 'subjectName', 'content', 'rating']) &&
+        request.resource.data.authorId == request.auth.uid &&
+        request.resource.data.content is string &&
+        request.resource.data.content.size() >= 10 &&
+        request.resource.data.content.size() <= 5000 &&
+        request.resource.data.rating is number &&
+        request.resource.data.rating >= 1 &&
+        request.resource.data.rating <= 5;
+    }
+    
+    function isValidMessage() {
+      return request.resource.data.keys().hasAll(['senderId', 'content', 'timestamp']) &&
+        request.resource.data.senderId == request.auth.uid &&
+        request.resource.data.content is string &&
+        request.resource.data.content.size() > 0 &&
+        request.resource.data.content.size() <= 1000 &&
+        request.resource.data.timestamp == request.time;
+    }
+    
+    function canSendMessage() {
+      // Rate limiting: max 100 messages per hour
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/rate_limits/$(request.auth.uid)).data.messageCount < 100;
+    }
+    
+    function canCreateReview() {
+      // Rate limiting: max 10 reviews per day
+      return isAuthenticated() &&
+        (!exists(/databases/$(database)/documents/rate_limits/$(request.auth.uid)) ||
+         get(/databases/$(database)/documents/rate_limits/$(request.auth.uid)).data.reviewCount < 10);
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId) && isValidEmail();
+      allow update: if isOwner(userId) && isNotBanned() &&
+        // Prevent changing critical fields
+        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'createdAt', 'email']));
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+    
+    // User profiles (public data)
+    match /profiles/{profileId} {
+      allow read: if true; // Public profiles
+      allow create: if isOwner(profileId);
+      allow update: if isOwner(profileId) && isNotBanned();
+      allow delete: if isOwner(profileId) || isAdmin();
+    }
+    
+    // Reviews collection
+    match /reviews/{reviewId} {
+      allow read: if true; // Public reviews
+      allow create: if isAuthenticated() && 
+        isValidEmail() && 
+        isNotBanned() && 
+        canCreateReview() &&
+        isValidReview();
+      allow update: if isOwner(resource.data.authorId) && 
+        isNotBanned() &&
+        // Can only update certain fields
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['content', 'rating', 'updatedAt']);
+      allow delete: if isOwner(resource.data.authorId) || isModerator();
+    }
+    
+    // Comments collection
+    match /reviews/{reviewId}/comments/{commentId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && 
+        isValidEmail() && 
+        isNotBanned() &&
+        request.resource.data.authorId == request.auth.uid;
+      allow update: if isOwner(resource.data.authorId) && isNotBanned();
+      allow delete: if isOwner(resource.data.authorId) || isModerator();
+    }
+    
+    // Chat rooms
+    match /chat_rooms/{roomId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.participants.hasAny([request.auth.uid]) || isAdmin());
+      allow create: if isAuthenticated() && 
+        isValidEmail() && 
+        isNotBanned() &&
+        request.resource.data.participants.hasAny([request.auth.uid]);
+      allow update: if isAuthenticated() && 
+        resource.data.participants.hasAny([request.auth.uid]) &&
+        isNotBanned();
+      allow delete: if isAdmin();
+      
+      // Messages subcollection
+      match /messages/{messageId} {
+        allow read: if isAuthenticated() && 
+          get(/databases/$(database)/documents/chat_rooms/$(roomId)).data.participants.hasAny([request.auth.uid]);
+        allow create: if isAuthenticated() && 
+          isNotBanned() &&
+          canSendMessage() &&
+          isValidMessage() &&
+          get(/databases/$(database)/documents/chat_rooms/$(roomId)).data.participants.hasAny([request.auth.uid]);
+        allow update: if false; // Messages cannot be edited
+        allow delete: if isOwner(resource.data.senderId) || isAdmin();
+      }
+    }
+    
+    // Notifications
+    match /notifications/{notificationId} {
+      allow read: if isOwner(resource.data.userId);
+      allow create: if false; // Only server can create notifications
+      allow update: if isOwner(resource.data.userId) && 
+        // Can only mark as read
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'readAt']);
+      allow delete: if isOwner(resource.data.userId);
+    }
+    
+    // Reports (for content moderation)
+    match /reports/{reportId} {
+      allow read: if isModerator();
+      allow create: if isAuthenticated() && isValidEmail() && isNotBanned();
+      allow update: if isModerator();
+      allow delete: if isAdmin();
+    }
+    
+    // Banned users list
+    match /banned_users/{userId} {
+      allow read: if isOwner(userId) || isModerator();
+      allow create: if isModerator();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // Rate limiting collection
+    match /rate_limits/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if false; // Only cloud functions can create
+      allow update: if false; // Only cloud functions can update
+      allow delete: if isAdmin();
+    }
+    
+    // App statistics (read-only)
+    match /statistics/{statId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only cloud functions can write
+    }
+    
+    // Premium subscriptions
+    match /subscriptions/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if false; // Only payment system can create
+      allow update: if false; // Only payment system can update
+      allow delete: if isAdmin();
+    }
+    
+    // Block lists
+    match /blocks/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId);
+    }
+    
+    // Favorites/Bookmarks
+    match /favorites/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId);
+    }
+    
+    // Verification requests
+    match /verification_requests/{requestId} {
+      allow read: if isOwner(resource.data.userId) || isModerator();
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid;
+      allow update: if isModerator();
+      allow delete: if isAdmin();
+    }
+    
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

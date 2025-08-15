@@ -1,0 +1,51 @@
+{
+  "name": "whisperdate",
+  "version": "1.0.0",
+  "description": "WhisperDate - Dating Review Platform",
+  "private": true,
+  "scripts": {
+    "setup": "npm install && flutter pub get && cd ios && pod install",
+    "clean": "flutter clean && rm -rf node_modules",
+    "format": "dart format .",
+    "lint": "flutter analyze",
+    "test": "flutter test",
+    "test:coverage": "flutter test --coverage",
+    "build:apk": "flutter build apk --release",
+    "build:ios": "flutter build ios --release",
+    "build:web": "flutter build web --release",
+    "deploy:android": "fastlane android deploy",
+    "deploy:ios": "fastlane ios deploy",
+    "firebase:deploy": "firebase deploy",
+    "firebase:rules": "firebase deploy --only firestore:rules,storage:rules",
+    "precommit": "npm run lint && npm run test",
+    "version:bump": "node scripts/bump-version.js",
+    "release": "npm run precommit && npm run build:apk && npm run build:ios"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.0",
+    "prettier": "^2.8.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "*.dart": [
+      "dart format",
+      "flutter analyze"
+    ],
+    "*.{js,json,md}": [
+      "prettier --write"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  }
+}

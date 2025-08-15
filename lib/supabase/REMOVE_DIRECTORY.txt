@@ -1,0 +1,1 @@
+This directory and its contents can be removed as it's causing compilation errors.

@@ -1,0 +1,113 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'package:whisperdate/firebase_options.dart';
+import 'package:whisperdate/theme.dart' as app_theme;
+import 'package:whisperdate/screens/auth/auth_wrapper.dart';
+import 'package:whisperdate/screens/settings/settings_screen.dart';
+import 'package:whisperdate/screens/notifications/notifications_screen.dart';
+import 'package:whisperdate/screens/profile/edit_profile_screen.dart';
+import 'package:whisperdate/screens/comments/comments_screen.dart';
+import 'package:whisperdate/screens/reviews/review_detail_screen.dart';
+import 'package:whisperdate/models/review.dart';
+import 'package:whisperdate/models/user.dart';
+import 'package:whisperdate/providers/app_state_provider.dart';
+import 'package:whisperdate/services/review_service.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    // Handle Firebase initialization error
+    print('Firebase initialization failed: $e');
+  }
+  
+  runApp(const WhisperDateApp());
+}
+
+class WhisperDateApp extends StatelessWidget {
+  const WhisperDateApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppStateProvider()),
+      ],
+      child: Consumer<AppStateProvider>(
+        builder: (context, appState, child) {
+          return MaterialApp(
+            title: 'WhisperDate',
+            debugShowCheckedModeBanner: false,
+            theme: app_theme.AppTheme.lightTheme,
+            darkTheme: app_theme.AppTheme.darkTheme,
+            themeMode: appState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            home: const AuthWrapper(),
+            routes: {
+              '/settings': (context) => const SettingsScreen(),
+              '/notifications': (context) => const NotificationsScreen(),
+              '/profile/edit': (context) => const EditProfileScreen(),
+            },
+            onGenerateRoute: (settings) {
+              if (settings.name?.startsWith('/review/') == true) {
+                // Extract review ID from route
+                final reviewId = settings.name!.split('/').last;
+                return MaterialPageRoute(
+                  builder: (context) => FutureBuilder<Review?>(
+                    future: ReviewService().getReview(reviewId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Scaffold(
+                          body: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                      if (snapshot.hasError || !snapshot.hasData) {
+                        return const Scaffold(
+                          body: Center(child: Text('Review not found')),
+                        );
+                      }
+                      return ReviewDetailScreen(review: snapshot.data!);
+                    },
+                  ),
+                );
+              }
+              return null;
+            },
+          );
+        },
+      ),
+    );
+  }
+  
+  Review _createMockReview(String id) {
+    // Mock review for demo purposes
+    return Review(
+      id: id,
+      authorId: 'author_1',
+      subjectName: 'Alex Martinez',
+      subjectAge: 26,
+      subjectGender: Gender.other,
+      category: DatingPreference.men,
+      dateDuration: DateDuration.twoToThreeHours,
+      dateYear: 2024,
+      relationshipType: RelationshipType.casual,
+      title: 'Great coffee date experience!',
+      content: 'Had an amazing time at the new coffee shop downtown. Great conversation and really nice atmosphere.',
+      rating: 5,
+      wouldRecommend: true,
+      location: Location(
+        city: 'Fort Washington',
+        state: 'MD',
+        country: 'US',
+        coords: Coordinates(lat: 38.7073, lng: -77.0365),
+      ),
+      stats: ReviewStats(likes: 15, comments: 8, views: 120),
+      createdAt: DateTime.now().subtract(const Duration(days: 2)),
+      updatedAt: DateTime.now().subtract(const Duration(days: 2)),
+    );
+  }
+}

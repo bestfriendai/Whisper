@@ -153,16 +153,35 @@ class _ModernHomeFeedState extends State<ModernHomeFeed>
         children: [
           Row(
             children: [
-              Text(
-                'WhisperDate',
-                style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  foreground: Paint()
-                    ..shader = const LinearGradient(
-                      colors: ModernTheme.primaryGradient,
-                    ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
-                ),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: ModernTheme.primaryGradient,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.lock_outline_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Locker Room Talk',
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      foreground: Paint()
+                        ..shader = const LinearGradient(
+                          colors: ModernTheme.primaryGradient,
+                        ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
+                    ),
+                  ),
+                ],
               ),
               const Spacer(),
               _buildViewToggle(),

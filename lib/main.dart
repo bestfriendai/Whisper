@@ -96,7 +96,7 @@ void main() async {
       DeviceOrientation.portraitDown,
     ]);
     
-    runApp(const WhisperDateApp());
+    runApp(const LockerRoomTalkApp());
   }, (error, stack) {
     logger.critical(
       'Unhandled error in app',
@@ -163,8 +163,8 @@ class ErrorApp extends StatelessWidget {
   }
 }
 
-class WhisperDateApp extends StatelessWidget {
-  const WhisperDateApp({super.key});
+class LockerRoomTalkApp extends StatelessWidget {
+  const LockerRoomTalkApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +175,7 @@ class WhisperDateApp extends StatelessWidget {
       child: Consumer<AppStateProvider>(
         builder: (context, appState, child) {
           return MaterialApp(
-            title: 'WhisperDate',
+            title: 'Locker Room Talk',
             debugShowCheckedModeBanner: false,
             theme: ModernTheme.lightTheme,
             darkTheme: ModernTheme.darkTheme,

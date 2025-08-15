@@ -273,21 +273,21 @@ class _ModernAuthScreenState extends State<ModernAuthScreen>
               ],
             ),
             child: const Icon(
-              Icons.favorite_rounded,
+              Icons.lock_outline_rounded,
               size: 50,
               color: Colors.white,
             ),
           ),
           const SizedBox(height: 20),
           Text(
-            'WhisperDate',
+            'Locker Room Talk',
             style: GoogleFonts.poppins(
-              fontSize: 32,
+              fontSize: 28,
               fontWeight: FontWeight.w700,
               foreground: Paint()
                 ..shader = const LinearGradient(
                   colors: ModernTheme.primaryGradient,
-                ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
+                ).createShader(const Rect.fromLTWH(0, 0, 300, 70)),
             ),
           ),
           const SizedBox(height: 8),

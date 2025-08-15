@@ -1,6 +1,6 @@
-# WhisperDate - Production-Ready Dating Review Platform
+# Locker Room Talk - Production-Ready Dating Review Platform
 
-WhisperDate is a modern, production-ready mobile application for sharing honest dating experiences and building meaningful connections. Built with Flutter and Firebase, it features comprehensive security, analytics, and scalability.
+Locker Room Talk is a modern, production-ready mobile application for sharing honest dating experiences and building meaningful connections. Built with Flutter and Firebase, it features comprehensive security, analytics, and scalability.
 
 ## Features
 
@@ -36,8 +36,8 @@ WhisperDate is a modern, production-ready mobile application for sharing honest 
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourcompany/whisperdate.git
-cd whisperdate
+git clone https://github.com/yourcompany/lockerroomtalk.git
+cd lockerroomtalk
 ```
 
 2. **Install dependencies**

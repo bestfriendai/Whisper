@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:google_fonts/google_fonts.dart';
-import 'package:whisperdate/theme/modern_theme.dart';
-import 'package:whisperdate/core/validators.dart';
-import 'package:whisperdate/services/auth_service.dart';
-import 'package:whisperdate/screens/auth/guest_onboarding_screen.dart';
+import 'package:lockerroomtalk/theme/modern_theme.dart';
+import 'package:lockerroomtalk/core/validators.dart';
+import 'package:lockerroomtalk/services/auth_service.dart';
+import 'package:lockerroomtalk/screens/auth/guest_onboarding_screen.dart';
 
 class ModernAuthScreen extends StatefulWidget {
   const ModernAuthScreen({super.key});

@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
-import 'package:whisperdate/config/environment_config.dart';
+import 'package:lockerroomtalk/config/environment_config.dart';
 
 enum LogLevel {
   verbose,

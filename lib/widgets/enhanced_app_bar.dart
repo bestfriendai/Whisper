@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/theme.dart';
+import 'package:lockerroomtalk/theme.dart';
 
 class EnhancedAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;

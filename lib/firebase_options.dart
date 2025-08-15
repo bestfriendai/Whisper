@@ -41,30 +41,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDemoWebKeyForLockerRoomTalk',
-    appId: '1:123456789012:web:demo123456789',
-    messagingSenderId: '123456789012',
-    projectId: 'lockerroomtalk-demo',
-    authDomain: 'lockerroomtalk-demo.firebaseapp.com',
-    storageBucket: 'lockerroomtalk-demo.appspot.com',
-    measurementId: 'G-DEMO123456',
+    apiKey: 'AIzaSyDcdGoo6Z2uHXNmFyXnKdltwrMUXPcp_4A',
+    appId: '1:514288923681:web:aa8d8134086ec33ebc5f60',
+    messagingSenderId: '514288923681',
+    projectId: 'locker-room-talk-app',
+    authDomain: 'locker-room-talk-app.firebaseapp.com',
+    storageBucket: 'locker-room-talk-app.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDemoAndroidKeyForLockerRoomTalk',
-    appId: '1:123456789012:android:demo123456789',
-    messagingSenderId: '123456789012',
-    projectId: 'lockerroomtalk-demo',
-    storageBucket: 'lockerroomtalk-demo.appspot.com',
+    apiKey: 'AIzaSyCS1MKSCCtlWsTin0jR5GoVLhb1k_GhbGI',
+    appId: '1:514288923681:android:fb311785def737eebc5f60',
+    messagingSenderId: '514288923681',
+    projectId: 'locker-room-talk-app',
+    storageBucket: 'locker-room-talk-app.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDemoIOSKeyForLockerRoomTalk',
-    appId: '1:123456789012:ios:demo123456789',
-    messagingSenderId: '123456789012',
-    projectId: 'lockerroomtalk-demo',
-    storageBucket: 'lockerroomtalk-demo.appspot.com',
-    iosBundleId: 'com.example.lockerroomtalk',
+    apiKey: 'AIzaSyBqTRnA77TYAbuyBbAYUYiAAAhVVEYBrk4',
+    appId: '1:514288923681:ios:3692234b116ce89abc5f60',
+    messagingSenderId: '514288923681',
+    projectId: 'locker-room-talk-app',
+    storageBucket: 'locker-room-talk-app.firebasestorage.app',
+    iosBundleId: 'com.mycompany.CounterApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

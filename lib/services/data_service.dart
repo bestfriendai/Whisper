@@ -1,11 +1,11 @@
 import 'dart:math';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/models/chat_room.dart';
-import 'package:whisperdate/services/review_service.dart';
-import 'package:whisperdate/services/user_service.dart';
-import 'package:whisperdate/services/chat_service.dart';
-import 'package:whisperdate/services/comment_service.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/models/chat_room.dart';
+import 'package:lockerroomtalk/services/review_service.dart';
+import 'package:lockerroomtalk/services/user_service.dart';
+import 'package:lockerroomtalk/services/chat_service.dart';
+import 'package:lockerroomtalk/services/comment_service.dart';
 
 /// Central data service that provides mock data for development
 /// and coordinates data fetching across different services

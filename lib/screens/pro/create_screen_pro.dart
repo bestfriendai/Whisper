@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/theme_modern_2025.dart';
+import 'package:lockerroomtalk/theme_modern_2025.dart';
 
 class CreateScreenPro extends StatelessWidget {
   const CreateScreenPro({super.key});

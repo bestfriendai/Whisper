@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:whisperdate/models/user.dart';
+import 'package:lockerroomtalk/models/user.dart';
 
 class ShimmerLoading extends StatelessWidget {
   final ViewType viewType;

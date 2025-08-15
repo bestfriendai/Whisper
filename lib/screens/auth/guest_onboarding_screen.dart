@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:google_fonts/google_fonts.dart';
-import 'package:whisperdate/theme/modern_theme.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
-import 'package:whisperdate/screens/app_shell.dart';
+import 'package:lockerroomtalk/theme/modern_theme.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/screens/app_shell.dart';
 import 'package:provider/provider.dart';
 
 class GuestOnboardingScreen extends StatefulWidget {

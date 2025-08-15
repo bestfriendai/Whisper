@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/widgets/custom_text_field.dart';
-import 'package:whisperdate/widgets/gradient_button.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/widgets/custom_text_field.dart';
+import 'package:lockerroomtalk/widgets/gradient_button.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});

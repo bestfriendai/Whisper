@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:whisperdate/services/notification_service.dart';
+import 'package:lockerroomtalk/services/notification_service.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});

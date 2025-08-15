@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/widgets/gradient_button.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/widgets/gradient_button.dart';
 
 class CommentsScreen extends StatefulWidget {
   final Review review;

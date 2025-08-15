@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:whisperdate/theme/modern_theme.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
-import 'package:whisperdate/screens/home/modern_home_feed.dart';
-import 'package:whisperdate/screens/explore/explore_screen.dart';
-import 'package:whisperdate/screens/create/create_review_screen_modern.dart';
-import 'package:whisperdate/screens/chat/chat_list_screen.dart';
-import 'package:whisperdate/screens/profile/profile_screen_modern.dart';
+import 'package:lockerroomtalk/theme/modern_theme.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/screens/home/modern_home_feed.dart';
+import 'package:lockerroomtalk/screens/explore/explore_screen.dart';
+import 'package:lockerroomtalk/screens/create/create_review_screen_modern.dart';
+import 'package:lockerroomtalk/screens/chat/chat_list_screen.dart';
+import 'package:lockerroomtalk/screens/profile/profile_screen_modern.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/theme.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
-import 'package:whisperdate/screens/home/home_feed_screen.dart';
-import 'package:whisperdate/screens/create/create_review_screen.dart';
-import 'package:whisperdate/screens/chat/chat_rooms_screen.dart';
-import 'package:whisperdate/screens/search/search_screen.dart';
-import 'package:whisperdate/screens/profile/profile_screen.dart';
-import 'package:whisperdate/screens/guest/guest_profile_screen.dart';
+import 'package:lockerroomtalk/theme.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/screens/home/home_feed_screen.dart';
+import 'package:lockerroomtalk/screens/create/create_review_screen.dart';
+import 'package:lockerroomtalk/screens/chat/chat_rooms_screen.dart';
+import 'package:lockerroomtalk/screens/search/search_screen.dart';
+import 'package:lockerroomtalk/screens/profile/profile_screen.dart';
+import 'package:lockerroomtalk/screens/guest/guest_profile_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});

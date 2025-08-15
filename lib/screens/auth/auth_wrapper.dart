@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
-import 'package:whisperdate/screens/auth/modern_auth_screen.dart';
-import 'package:whisperdate/screens/onboarding/onboarding_flow.dart';
-import 'package:whisperdate/screens/app_shell.dart';
-import 'package:whisperdate/widgets/enhanced_loading.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/screens/auth/modern_auth_screen.dart';
+import 'package:lockerroomtalk/screens/onboarding/onboarding_flow.dart';
+import 'package:lockerroomtalk/screens/app_shell.dart';
+import 'package:lockerroomtalk/widgets/enhanced_loading.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});

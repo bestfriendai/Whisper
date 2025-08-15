@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/services/demo_data_service.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/services/demo_data_service.dart';
 
 // Type alias for compatibility
 typedef User = AppUser;

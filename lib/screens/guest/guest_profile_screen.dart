@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/screens/auth/sign_in_screen.dart';
-import 'package:whisperdate/screens/auth/sign_up_screen.dart';
-import 'package:whisperdate/widgets/gradient_button.dart';
+import 'package:lockerroomtalk/screens/auth/sign_in_screen.dart';
+import 'package:lockerroomtalk/screens/auth/sign_up_screen.dart';
+import 'package:lockerroomtalk/widgets/gradient_button.dart';
 
 class GuestProfileScreen extends StatelessWidget {
   const GuestProfileScreen({super.key});

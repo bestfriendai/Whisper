@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:whisperdate/core/logger.dart';
+import 'package:lockerroomtalk/core/logger.dart';
 
 class AppError implements Exception {
   final String message;

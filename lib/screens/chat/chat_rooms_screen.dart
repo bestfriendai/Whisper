@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:whisperdate/models/chat_room.dart';
-import 'package:whisperdate/screens/chat/chat_page.dart';
-import 'package:whisperdate/services/chat_service.dart';
+import 'package:lockerroomtalk/models/chat_room.dart';
+import 'package:lockerroomtalk/screens/chat/chat_page.dart';
+import 'package:lockerroomtalk/services/chat_service.dart';
 
 class ChatRoomsScreen extends StatefulWidget {
   const ChatRoomsScreen({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/theme.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/theme.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});

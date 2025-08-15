@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/theme_modern.dart' as modern_theme;
-import 'package:whisperdate/screens/auth/modern_sign_in_screen.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
-import 'package:whisperdate/services/demo_data_service.dart';
-import 'package:whisperdate/widgets/modern_review_card.dart';
-import 'package:whisperdate/widgets/modern_loading_states.dart';
+import 'package:lockerroomtalk/theme_modern.dart' as modern_theme;
+import 'package:lockerroomtalk/screens/auth/modern_sign_in_screen.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/services/demo_data_service.dart';
+import 'package:lockerroomtalk/widgets/modern_review_card.dart';
+import 'package:lockerroomtalk/widgets/modern_loading_states.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

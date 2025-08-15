@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Initialize Firebase - Locker Room Talk</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #log {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        .link {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Locker Room Talk - Firebase Setup</h1>
+        <p>Initialize Firebase services and test data for your app</p>
+        
+        <div id="status" class="status info">
+            Ready to initialize Firebase services...
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <button onclick="initializeFirebase()">1. Initialize Firebase</button>
+            <button onclick="enableAnonymousAuth()" disabled id="authBtn">2. Enable Anonymous Auth</button>
+            <button onclick="createTestData()" disabled id="dataBtn">3. Create Test Data</button>
+            <button onclick="testConnection()" disabled id="testBtn">4. Test Connection</button>
+        </div>
+        
+        <div id="log">
+            <div class="log-entry">📝 Click "Initialize Firebase" to start...</div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <h3>Important Links:</h3>
+            <ul>
+                <li><a href="https://console.firebase.google.com/project/locker-room-talk-app/authentication" target="_blank" class="link">Enable Authentication Providers →</a></li>
+                <li><a href="https://console.firebase.google.com/project/locker-room-talk-app/firestore" target="_blank" class="link">View Firestore Database →</a></li>
+                <li><a href="https://console.firebase.google.com/project/locker-room-talk-app/storage" target="_blank" class="link">Configure Storage →</a></li>
+                <li><a href="http://localhost:3000" target="_blank" class="link">Open App →</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcdGoo6Z2uHXNmFyXnKdltwrMUXPcp_4A",
+            authDomain: "locker-room-talk-app.firebaseapp.com",
+            projectId: "locker-room-talk-app",
+            storageBucket: "locker-room-talk-app.firebasestorage.app",
+            messagingSenderId: "514288923681",
+            appId: "1:514288923681:web:aa8d8134086ec33ebc5f60"
+        };
+
+        let app, auth, db;
+        
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let icon = '📝';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'warning') icon = '⚠️';
+            
+            entry.innerHTML = `[${timestamp}] ${icon} ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function updateStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+        }
+        
+        async function initializeFirebase() {
+            try {
+                log('Initializing Firebase...');
+                
+                // Initialize Firebase
+                app = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                log('Firebase initialized successfully!', 'success');
+                updateStatus('Firebase initialized! Now enable Anonymous Auth.', 'success');
+                
+                document.getElementById('authBtn').disabled = false;
+                
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+                updateStatus('Failed to initialize Firebase', 'error');
+            }
+        }
+        
+        async function enableAnonymousAuth() {
+            try {
+                log('Enabling anonymous authentication...');
+                
+                // Sign in anonymously
+                const result = await auth.signInAnonymously();
+                log(`Anonymous auth enabled! User ID: ${result.user.uid}`, 'success');
+                
+                updateStatus('Anonymous auth working! Now create test data.', 'success');
+                document.getElementById('dataBtn').disabled = false;
+                
+            } catch (error) {
+                if (error.code === 'auth/operation-not-allowed') {
+                    log('Please enable Anonymous auth in Firebase Console first!', 'warning');
+                    log('Go to: https://console.firebase.google.com/project/locker-room-talk-app/authentication/providers', 'warning');
+                } else {
+                    log(`Error: ${error.message}`, 'error');
+                }
+                updateStatus('Failed to enable anonymous auth', 'error');
+            }
+        }
+        
+        async function createTestData() {
+            try {
+                log('Creating test data...');
+                
+                // Create test reviews
+                const reviews = [
+                    {
+                        authorId: auth.currentUser.uid,
+                        subjectName: 'Emma Wilson',
+                        subjectAge: 28,
+                        subjectGender: 'female',
+                        category: 'coffee',
+                        dateDuration: 'twoToThreeHours',
+                        dateYear: 2024,
+                        relationshipType: 'casual',
+                        title: 'Amazing Coffee Date at Central Perk',
+                        content: 'Had a wonderful time! Great conversation and perfect atmosphere.',
+                        rating: 5,
+                        wouldRecommend: true,
+                        location: { city: 'New York', state: 'NY', country: 'USA' },
+                        venue: 'Central Perk Cafe',
+                        tags: ['coffee', 'firstdate', 'romantic'],
+                        imageUrls: [],
+                        isAnonymous: false,
+                        stats: { views: 142, likes: 23, comments: 5, shares: 2, helpful: 18, notHelpful: 1 },
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    },
+                    {
+                        authorId: auth.currentUser.uid,
+                        subjectName: 'Michael Chen',
+                        subjectAge: 32,
+                        subjectGender: 'male',
+                        category: 'dinner',
+                        dateDuration: 'twoToThreeHours',
+                        dateYear: 2024,
+                        relationshipType: 'serious',
+                        title: 'Romantic Dinner at The Ivy',
+                        content: 'Perfect evening! Amazing food and great company.',
+                        rating: 5,
+                        wouldRecommend: true,
+                        location: { city: 'Los Angeles', state: 'CA', country: 'USA' },
+                        venue: 'The Ivy Restaurant',
+                        tags: ['dinner', 'romantic', 'upscale'],
+                        imageUrls: [],
+                        isAnonymous: false,
+                        stats: { views: 287, likes: 45, comments: 12, shares: 8, helpful: 38, notHelpful: 2 },
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                ];
+                
+                for (const review of reviews) {
+                    const docRef = await db.collection('reviews').add(review);
+                    log(`Created review: ${review.title}`, 'success');
+                }
+                
+                log('Test data created successfully!', 'success');
+                updateStatus('Test data created! Now test the connection.', 'success');
+                document.getElementById('testBtn').disabled = false;
+                
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+                updateStatus('Failed to create test data', 'error');
+            }
+        }
+        
+        async function testConnection() {
+            try {
+                log('Testing Firestore connection...');
+                
+                // Read reviews
+                const snapshot = await db.collection('reviews').limit(5).get();
+                log(`Found ${snapshot.size} reviews in database`, 'success');
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    log(`- ${data.title} (Rating: ${data.rating}/5)`);
+                });
+                
+                updateStatus('✅ Firebase is fully configured and working!', 'success');
+                log('🎉 Setup complete! Your app is ready at http://localhost:3000', 'success');
+                
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+                updateStatus('Failed to test connection', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

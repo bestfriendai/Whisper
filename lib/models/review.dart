@@ -1,4 +1,4 @@
-import 'package:whisperdate/models/user.dart';
+import 'package:lockerroomtalk/models/user.dart';
 
 class Review {
   final String id;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:whisperdate/theme/modern_theme.dart';
+import 'package:lockerroomtalk/theme/modern_theme.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});

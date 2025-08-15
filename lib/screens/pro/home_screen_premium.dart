@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:whisperdate/theme_modern_2025.dart';
+import 'package:lockerroomtalk/theme_modern_2025.dart';
 import 'dart:math' as math;
 
 class HomeScreenPremium extends StatefulWidget {

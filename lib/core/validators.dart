@@ -1,4 +1,4 @@
-import 'package:whisperdate/config/environment_config.dart';
+import 'package:lockerroomtalk/config/environment_config.dart';
 
 class Validators {
   static final RegExp _emailRegExp = RegExp(

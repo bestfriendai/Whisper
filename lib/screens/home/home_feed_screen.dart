@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/widgets/review_card.dart';
-import 'package:whisperdate/widgets/shimmer_loading.dart';
-import 'package:whisperdate/services/review_service.dart';
-import 'package:whisperdate/theme.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/widgets/review_card.dart';
+import 'package:lockerroomtalk/widgets/shimmer_loading.dart';
+import 'package:lockerroomtalk/services/review_service.dart';
+import 'package:lockerroomtalk/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
 
 class HomeFeedScreen extends StatefulWidget {
   const HomeFeedScreen({super.key});

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:whisperdate/models/review.dart';
+import 'package:lockerroomtalk/models/review.dart';
 
 class ReviewService {
   static final ReviewService _instance = ReviewService._internal();

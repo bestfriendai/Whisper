@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/services/user_service.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/services/user_service.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/widgets/gradient_button.dart';
-import 'package:whisperdate/services/review_service.dart';
-import 'package:whisperdate/services/comment_service.dart';
-import 'package:whisperdate/screens/comments/comments_screen.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/widgets/gradient_button.dart';
+import 'package:lockerroomtalk/services/review_service.dart';
+import 'package:lockerroomtalk/services/comment_service.dart';
+import 'package:lockerroomtalk/screens/comments/comments_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 

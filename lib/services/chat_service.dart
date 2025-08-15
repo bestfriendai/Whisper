@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:whisperdate/models/chat_room.dart';
+import 'package:lockerroomtalk/models/chat_room.dart';
 
 class ChatService {
   static final ChatService _instance = ChatService._internal();

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:whisperdate/theme_modern_2025.dart';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/models/user.dart';
+import 'package:lockerroomtalk/theme_modern_2025.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/models/user.dart';
 
 class HomeScreenPro extends StatefulWidget {
   const HomeScreenPro({super.key});

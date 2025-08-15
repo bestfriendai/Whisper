@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:whisperdate/theme/modern_theme.dart';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/models/user.dart';
+import 'package:lockerroomtalk/theme/modern_theme.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/models/user.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
 
 enum ViewType { masonry, swipe, list }
 

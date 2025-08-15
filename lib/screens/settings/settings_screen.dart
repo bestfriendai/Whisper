@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/widgets/gradient_button.dart';
-import 'package:whisperdate/theme.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/widgets/gradient_button.dart';
+import 'package:lockerroomtalk/theme.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

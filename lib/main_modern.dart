@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/firebase_options.dart';
-import 'package:whisperdate/theme_modern.dart' as modern_theme;
-import 'package:whisperdate/screens/auth/modern_sign_in_screen.dart';
-import 'package:whisperdate/screens/modern_app_shell.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
-import 'package:whisperdate/services/auth_service.dart';
-import 'package:whisperdate/services/demo_mode_service.dart';
+import 'package:lockerroomtalk/firebase_options.dart';
+import 'package:lockerroomtalk/theme_modern.dart' as modern_theme;
+import 'package:lockerroomtalk/screens/auth/modern_sign_in_screen.dart';
+import 'package:lockerroomtalk/screens/modern_app_shell.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/services/auth_service.dart';
+import 'package:lockerroomtalk/services/demo_mode_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

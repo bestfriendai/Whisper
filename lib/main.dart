@@ -3,22 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/firebase_options.dart';
-import 'package:whisperdate/theme/modern_theme.dart';
-import 'package:whisperdate/screens/auth/auth_wrapper.dart';
-import 'package:whisperdate/screens/settings/settings_screen.dart';
-import 'package:whisperdate/screens/notifications/notifications_screen.dart';
-import 'package:whisperdate/screens/profile/edit_profile_screen.dart';
-import 'package:whisperdate/screens/comments/comments_screen.dart';
-import 'package:whisperdate/screens/reviews/review_detail_screen.dart';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
-import 'package:whisperdate/services/review_service.dart';
-import 'package:whisperdate/services/analytics_service.dart';
-import 'package:whisperdate/config/environment_config.dart';
-import 'package:whisperdate/core/logger.dart';
-import 'package:whisperdate/core/error_handler.dart';
+import 'package:lockerroomtalk/firebase_options.dart';
+import 'package:lockerroomtalk/theme/modern_theme.dart';
+import 'package:lockerroomtalk/screens/auth/auth_wrapper.dart';
+import 'package:lockerroomtalk/screens/settings/settings_screen.dart';
+import 'package:lockerroomtalk/screens/notifications/notifications_screen.dart';
+import 'package:lockerroomtalk/screens/profile/edit_profile_screen.dart';
+import 'package:lockerroomtalk/screens/comments/comments_screen.dart';
+import 'package:lockerroomtalk/screens/reviews/review_detail_screen.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/services/review_service.dart';
+import 'package:lockerroomtalk/services/analytics_service.dart';
+import 'package:lockerroomtalk/config/environment_config.dart';
+import 'package:lockerroomtalk/core/logger.dart';
+import 'package:lockerroomtalk/core/error_handler.dart';
 
 void main() async {
   await runZonedGuarded(() async {

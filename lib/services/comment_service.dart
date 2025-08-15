@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:whisperdate/models/user.dart';
+import 'package:lockerroomtalk/models/user.dart';
 
 class Comment {
   final String id;

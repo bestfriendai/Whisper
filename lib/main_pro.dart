@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/theme_modern_2025.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
-import 'package:whisperdate/screens/pro/home_screen_premium.dart';
-import 'package:whisperdate/screens/pro/discover_screen_pro.dart';
-import 'package:whisperdate/screens/pro/create_screen_pro.dart';
-import 'package:whisperdate/screens/pro/messages_screen_pro.dart';
-import 'package:whisperdate/screens/pro/profile_screen_pro.dart';
+import 'package:lockerroomtalk/theme_modern_2025.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/screens/pro/home_screen_premium.dart';
+import 'package:lockerroomtalk/screens/pro/discover_screen_pro.dart';
+import 'package:lockerroomtalk/screens/pro/create_screen_pro.dart';
+import 'package:lockerroomtalk/screens/pro/messages_screen_pro.dart';
+import 'package:lockerroomtalk/screens/pro/profile_screen_pro.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(

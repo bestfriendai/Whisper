@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/widgets/gradient_button.dart';
-import 'package:whisperdate/widgets/custom_text_field.dart';
-import 'package:whisperdate/screens/onboarding/onboarding_flow.dart';
+import 'package:lockerroomtalk/widgets/gradient_button.dart';
+import 'package:lockerroomtalk/widgets/custom_text_field.dart';
+import 'package:lockerroomtalk/screens/onboarding/onboarding_flow.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

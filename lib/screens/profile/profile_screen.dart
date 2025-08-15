@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/theme.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

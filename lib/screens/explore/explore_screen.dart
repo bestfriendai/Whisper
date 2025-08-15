@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:google_fonts/google_fonts.dart';
-import 'package:whisperdate/theme/modern_theme.dart';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/models/user.dart';
+import 'package:lockerroomtalk/theme/modern_theme.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/models/user.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});

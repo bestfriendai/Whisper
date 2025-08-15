@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:whisperdate/theme_lockerroom.dart';
+import 'package:lockerroomtalk/theme_lockerroom.dart';
 
 /// Sports-themed loading animations for LockerRoom Talk
 class SportsLoadingAnimations {

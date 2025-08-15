@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/services/auth_service.dart';
-import 'package:whisperdate/services/user_service.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/services/auth_service.dart';
+import 'package:lockerroomtalk/services/user_service.dart';
 
 class AppStateProvider extends ChangeNotifier {
   static final AppStateProvider _instance = AppStateProvider._internal();

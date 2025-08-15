@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/models/chat_room.dart';
+import 'package:lockerroomtalk/models/chat_room.dart';
 
 class ChatPage extends StatefulWidget {
   final ChatRoom chatRoom;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/screens/onboarding/welcome_screen.dart';
-import 'package:whisperdate/screens/onboarding/location_screen.dart';
-import 'package:whisperdate/screens/onboarding/username_screen.dart';
-import 'package:whisperdate/screens/home/main_navigation.dart';
+import 'package:lockerroomtalk/screens/onboarding/welcome_screen.dart';
+import 'package:lockerroomtalk/screens/onboarding/location_screen.dart';
+import 'package:lockerroomtalk/screens/onboarding/username_screen.dart';
+import 'package:lockerroomtalk/screens/home/main_navigation.dart';
 
 class OnboardingFlow extends StatefulWidget {
   const OnboardingFlow({super.key});

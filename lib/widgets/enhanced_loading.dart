@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/theme.dart';
+import 'package:lockerroomtalk/theme.dart';
 
 class EnhancedLoadingIndicator extends StatefulWidget {
   final double size;

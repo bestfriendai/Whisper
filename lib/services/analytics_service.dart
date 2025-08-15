@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:whisperdate/config/environment_config.dart';
-import 'package:whisperdate/core/logger.dart';
+import 'package:lockerroomtalk/config/environment_config.dart';
+import 'package:lockerroomtalk/core/logger.dart';
 
 enum AnalyticsEvent {
   // Authentication events

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/widgets/custom_text_field.dart';
-import 'package:whisperdate/widgets/gradient_button.dart';
-import 'package:whisperdate/widgets/enhanced_app_bar.dart';
-import 'package:whisperdate/widgets/enhanced_loading.dart';
-import 'package:whisperdate/services/review_service.dart';
-import 'package:whisperdate/services/image_service.dart';
-import 'package:whisperdate/theme.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/widgets/custom_text_field.dart';
+import 'package:lockerroomtalk/widgets/gradient_button.dart';
+import 'package:lockerroomtalk/widgets/enhanced_app_bar.dart';
+import 'package:lockerroomtalk/widgets/enhanced_loading.dart';
+import 'package:lockerroomtalk/services/review_service.dart';
+import 'package:lockerroomtalk/services/image_service.dart';
+import 'package:lockerroomtalk/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:whisperdate/providers/app_state_provider.dart';
+import 'package:lockerroomtalk/providers/app_state_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class CreateReviewScreen extends StatefulWidget {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
-import 'package:whisperdate/models/review.dart';
-import 'package:whisperdate/models/user.dart';
-import 'package:whisperdate/screens/reviews/review_detail_screen.dart';
-import 'package:whisperdate/theme.dart';
+import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/models/user.dart';
+import 'package:lockerroomtalk/screens/reviews/review_detail_screen.dart';
+import 'package:lockerroomtalk/theme.dart';
 
 class ReviewCard extends StatelessWidget {
   final Review review;

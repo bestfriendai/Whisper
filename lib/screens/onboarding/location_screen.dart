@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:whisperdate/screens/onboarding/onboarding_flow.dart';
-import 'package:whisperdate/widgets/gradient_button.dart';
+import 'package:lockerroomtalk/screens/onboarding/onboarding_flow.dart';
+import 'package:lockerroomtalk/widgets/gradient_button.dart';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});

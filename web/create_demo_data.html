@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Demo Data - Locker Room Talk</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .city-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        .city-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 20px;
+            color: #333;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        #progress {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .review-preview {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+        .review-preview img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            float: left;
+            margin-right: 15px;
+        }
+        #log {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .log-entry {
+            margin: 3px 0;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>🔒</span>
+                Locker Room Talk - Demo Data Generator
+            </h1>
+            <p>Generate realistic dating reviews with images for major cities</p>
+        </div>
+        
+        <div class="content">
+            <div class="status info" id="status">
+                Click "Generate All Demo Data" to create reviews for all major cities
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <button onclick="signInAndGenerate()" id="mainBtn" style="font-size: 18px; padding: 15px 30px;">
+                    🚀 Generate All Demo Data
+                </button>
+                <button onclick="clearAllReviews()" style="background: #dc3545;">
+                    🗑️ Clear All Reviews
+                </button>
+            </div>
+
+            <div id="progress" style="display: none;">
+                <h3>Generation Progress</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+                </div>
+                <p id="progressText">Initializing...</p>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="cityCount">0</div>
+                    <div class="stat-label">Cities</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="reviewCount">0</div>
+                    <div class="stat-label">Reviews Created</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="imageCount">0</div>
+                    <div class="stat-label">Images Added</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="userCount">0</div>
+                    <div class="stat-label">Demo Users</div>
+                </div>
+            </div>
+
+            <div id="log">
+                <div class="log-entry">Ready to generate demo data...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcdGoo6Z2uHXNmFyXnKdltwrMUXPcp_4A",
+            authDomain: "locker-room-talk-app.firebaseapp.com",
+            projectId: "locker-room-talk-app",
+            storageBucket: "locker-room-talk-app.firebasestorage.app",
+            messagingSenderId: "514288923681",
+            appId: "1:514288923681:web:aa8d8134086ec33ebc5f60"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let totalReviews = 0;
+        let totalImages = 0;
+        let totalCities = 0;
+        let currentProgress = 0;
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const time = new Date().toLocaleTimeString();
+            
+            let icon = '📝';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'warning') icon = '⚠️';
+            
+            entry.innerHTML = `[${time}] ${icon} ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateStatus(message, type) {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+        }
+
+        function updateProgress(percent, text) {
+            document.getElementById('progress').style.display = 'block';
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressFill').textContent = Math.round(percent) + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+
+        function updateStats() {
+            document.getElementById('cityCount').textContent = totalCities;
+            document.getElementById('reviewCount').textContent = totalReviews;
+            document.getElementById('imageCount').textContent = totalImages;
+            document.getElementById('userCount').textContent = demoUsers.length;
+        }
+
+        // Demo users with diverse backgrounds
+        const demoUsers = [
+            { id: 'demo_user_1', name: 'Alex Thompson', age: 28, bio: 'Software engineer who loves hiking' },
+            { id: 'demo_user_2', name: 'Sarah Mitchell', age: 32, bio: 'Marketing director and wine enthusiast' },
+            { id: 'demo_user_3', name: 'James Rodriguez', age: 26, bio: 'Photographer and travel blogger' },
+            { id: 'demo_user_4', name: 'Emma Chen', age: 29, bio: 'Startup founder and coffee addict' },
+            { id: 'demo_user_5', name: 'Michael Davis', age: 35, bio: 'Investment banker and fitness enthusiast' },
+            { id: 'demo_user_6', name: 'Sophie Laurent', age: 27, bio: 'Artist and yoga instructor' },
+            { id: 'demo_user_7', name: 'David Kim', age: 31, bio: 'Chef and food critic' },
+            { id: 'demo_user_8', name: 'Isabella Martinez', age: 25, bio: 'Medical student and book lover' }
+        ];
+
+        // Stock photo URLs for different date scenarios
+        const imageUrls = {
+            coffee: [
+                'https://images.unsplash.com/photo-1559305616-3f99cd43e353?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1514066558159-fc8c737ef259?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=400&fit=crop'
+            ],
+            dinner: [
+                'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=400&fit=crop'
+            ],
+            drinks: [
+                'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1546171753-97d7676e4602?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=400&h=400&fit=crop'
+            ],
+            activity: [
+                'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1523301343968-6a6ebf63c672?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1541689221361-ad95003448dc?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400&h=400&fit=crop'
+            ],
+            outdoor: [
+                'https://images.unsplash.com/photo-1516733968668-dbdce39c4651?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1474452926969-af7bfdb9ca39?w=400&h=400&fit=crop'
+            ],
+            brunch: [
+                'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=400&h=400&fit=crop'
+            ]
+        };
+
+        // Major cities with date venues
+        const cityData = {
+            'New York': {
+                venues: [
+                    { name: 'The High Line', type: 'outdoor', address: 'Chelsea, Manhattan' },
+                    { name: 'Blue Note Jazz Club', type: 'drinks', address: 'Greenwich Village' },
+                    { name: 'Gramercy Tavern', type: 'dinner', address: 'Gramercy Park' },
+                    { name: 'Brooklyn Bridge Park', type: 'outdoor', address: 'Brooklyn' },
+                    { name: 'The Met Museum', type: 'activity', address: 'Upper East Side' },
+                    { name: 'Joe\'s Coffee', type: 'coffee', address: 'Multiple Locations' }
+                ]
+            },
+            'Los Angeles': {
+                venues: [
+                    { name: 'Griffith Observatory', type: 'activity', address: 'Los Feliz' },
+                    { name: 'Venice Beach', type: 'outdoor', address: 'Venice' },
+                    { name: 'Republique', type: 'brunch', address: 'Mid-City' },
+                    { name: 'The Getty Center', type: 'activity', address: 'Brentwood' },
+                    { name: 'Malibu Wines', type: 'drinks', address: 'Malibu' },
+                    { name: 'Bestia', type: 'dinner', address: 'Downtown LA' }
+                ]
+            },
+            'Chicago': {
+                venues: [
+                    { name: 'Millennium Park', type: 'outdoor', address: 'The Loop' },
+                    { name: 'Girl & the Goat', type: 'dinner', address: 'West Loop' },
+                    { name: 'Art Institute', type: 'activity', address: 'Downtown' },
+                    { name: 'Kingston Mines', type: 'drinks', address: 'Lincoln Park' },
+                    { name: 'Lou Mitchell\'s', type: 'brunch', address: 'Near West Side' },
+                    { name: 'Intelligentsia Coffee', type: 'coffee', address: 'Multiple Locations' }
+                ]
+            },
+            'San Francisco': {
+                venues: [
+                    { name: 'Golden Gate Park', type: 'outdoor', address: 'Haight-Ashbury' },
+                    { name: 'Ferry Building', type: 'brunch', address: 'Embarcadero' },
+                    { name: 'State Bird Provisions', type: 'dinner', address: 'Fillmore' },
+                    { name: 'Dolores Park', type: 'outdoor', address: 'Mission District' },
+                    { name: 'Blue Bottle Coffee', type: 'coffee', address: 'Multiple Locations' },
+                    { name: 'The View Lounge', type: 'drinks', address: 'SoMa' }
+                ]
+            },
+            'Miami': {
+                venues: [
+                    { name: 'South Beach', type: 'outdoor', address: 'Miami Beach' },
+                    { name: 'Wynwood Walls', type: 'activity', address: 'Wynwood' },
+                    { name: 'Joe\'s Stone Crab', type: 'dinner', address: 'South Beach' },
+                    { name: 'Ball & Chain', type: 'drinks', address: 'Little Havana' },
+                    { name: 'Mandolin Aegean', type: 'brunch', address: 'Design District' },
+                    { name: 'Panther Coffee', type: 'coffee', address: 'Multiple Locations' }
+                ]
+            },
+            'Boston': {
+                venues: [
+                    { name: 'Boston Common', type: 'outdoor', address: 'Downtown' },
+                    { name: 'Museum of Fine Arts', type: 'activity', address: 'Fenway' },
+                    { name: 'Neptune Oyster', type: 'dinner', address: 'North End' },
+                    { name: 'Drink', type: 'drinks', address: 'Fort Point' },
+                    { name: 'Tatte Bakery', type: 'coffee', address: 'Multiple Locations' },
+                    { name: 'The Friendly Toast', type: 'brunch', address: 'Back Bay' }
+                ]
+            },
+            'Seattle': {
+                venues: [
+                    { name: 'Pike Place Market', type: 'activity', address: 'Downtown' },
+                    { name: 'Gas Works Park', type: 'outdoor', address: 'Wallingford' },
+                    { name: 'Canlis', type: 'dinner', address: 'Queen Anne' },
+                    { name: 'Canon', type: 'drinks', address: 'Capitol Hill' },
+                    { name: 'Portage Bay Cafe', type: 'brunch', address: 'Multiple Locations' },
+                    { name: 'Victrola Coffee', type: 'coffee', address: 'Capitol Hill' }
+                ]
+            },
+            'Austin': {
+                venues: [
+                    { name: 'Zilker Park', type: 'outdoor', address: 'South Austin' },
+                    { name: 'Franklin Barbecue', type: 'dinner', address: 'East Austin' },
+                    { name: 'Rainey Street', type: 'drinks', address: 'Downtown' },
+                    { name: 'South Congress', type: 'activity', address: 'South Austin' },
+                    { name: 'Moonshine Grill', type: 'brunch', address: 'Downtown' },
+                    { name: 'Houndstooth Coffee', type: 'coffee', address: 'Multiple Locations' }
+                ]
+            },
+            'Denver': {
+                venues: [
+                    { name: 'Red Rocks Park', type: 'outdoor', address: 'Morrison' },
+                    { name: 'Denver Art Museum', type: 'activity', address: 'Downtown' },
+                    { name: 'Mercantile Dining', type: 'dinner', address: 'Union Station' },
+                    { name: 'Williams & Graham', type: 'drinks', address: 'Highlands' },
+                    { name: 'Snooze AM Eatery', type: 'brunch', address: 'Multiple Locations' },
+                    { name: 'Corvus Coffee', type: 'coffee', address: 'Multiple Locations' }
+                ]
+            },
+            'Portland': {
+                venues: [
+                    { name: 'Powell\'s Books', type: 'activity', address: 'Pearl District' },
+                    { name: 'Forest Park', type: 'outdoor', address: 'Northwest Portland' },
+                    { name: 'Le Pigeon', type: 'dinner', address: 'East Burnside' },
+                    { name: 'Multnomah Whiskey Library', type: 'drinks', address: 'Downtown' },
+                    { name: 'Screen Door', type: 'brunch', address: 'Multiple Locations' },
+                    { name: 'Stumptown Coffee', type: 'coffee', address: 'Multiple Locations' }
+                ]
+            }
+        };
+
+        // Review templates with varied content
+        const reviewTemplates = [
+            {
+                titleFormat: "Amazing {type} at {venue}",
+                contentTemplates: [
+                    "Had an incredible time! The atmosphere was perfect and the conversation flowed naturally. We talked about everything from travel experiences to our favorite books. Definitely exceeded my expectations.",
+                    "What a wonderful experience! The venue was exactly as described and my date was charming and witty. We lost track of time chatting about our shared interests. Would definitely recommend this spot for a first date.",
+                    "Fantastic date! The ambiance was romantic and the service was impeccable. We had great chemistry and ended up staying much longer than planned. This is definitely a great spot for getting to know someone."
+                ],
+                rating: 5,
+                wouldRecommend: true
+            },
+            {
+                titleFormat: "Great {type} Date Experience",
+                contentTemplates: [
+                    "Really enjoyed this date! The location was convenient and had a nice vibe. My date was friendly and engaging. We had some interesting conversations about our careers and hobbies. Would go back!",
+                    "Had a lovely time! The venue was bustling but not too loud for conversation. My date was punctual and well-dressed. We discovered we have a lot in common. Definitely a solid choice for a date spot.",
+                    "Very pleasant experience overall. The setting was comfortable and the atmosphere was relaxed. Good conversation with lots of laughs. This place creates the perfect environment for a date."
+                ],
+                rating: 4,
+                wouldRecommend: true
+            },
+            {
+                titleFormat: "Memorable Evening at {venue}",
+                contentTemplates: [
+                    "Such a special night! Everything from the ambiance to the company was perfect. We talked for hours and the time just flew by. The venue really sets the mood for romance. Can't wait to go back!",
+                    "Absolutely wonderful date! The location exceeded expectations and my date was absolutely charming. We had amazing chemistry and made plans for a second date before the night ended. Highly recommend!",
+                    "Perfect date night! The atmosphere was intimate and romantic. My date was engaging and we had so much in common. This is definitely my new go-to spot for special occasions."
+                ],
+                rating: 5,
+                wouldRecommend: true
+            },
+            {
+                titleFormat: "Nice {type} with Good Company",
+                contentTemplates: [
+                    "Enjoyable date with a few minor hiccups. The venue was a bit crowded but we managed to find a quiet corner. My date was nice though a bit shy at first. Things got better as the evening progressed.",
+                    "Pretty good experience overall. The location was decent though parking was a challenge. My date was friendly and we had some good conversations. Not the best date ever but definitely not the worst.",
+                    "It was a pleasant evening. The venue was okay, nothing spectacular but comfortable enough. Conversation was good though we didn't have as much in common as I'd hoped. Still worth trying."
+                ],
+                rating: 3,
+                wouldRecommend: true
+            },
+            {
+                titleFormat: "Wonderful {type} at {venue}",
+                contentTemplates: [
+                    "What an amazing experience! The venue was stunning and my date was absolutely delightful. We connected on so many levels and the conversation never had a dull moment. Already planning our next date!",
+                    "Exceeded all expectations! The atmosphere was perfect for a romantic evening and my date was charming and funny. We discovered so many shared interests. This place is a hidden gem for dates!",
+                    "Incredible date night! Everything was perfect from start to finish. Great food/drinks, amazing company, and a beautiful setting. We both agreed this was one of our best first dates ever!"
+                ],
+                rating: 5,
+                wouldRecommend: true
+            }
+        ];
+
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateReviewContent(venue, template) {
+            const typeMap = {
+                'coffee': 'Coffee Date',
+                'dinner': 'Dinner',
+                'drinks': 'Cocktails',
+                'activity': 'Activity',
+                'outdoor': 'Outdoor Adventure',
+                'brunch': 'Brunch'
+            };
+
+            const title = template.titleFormat
+                .replace('{type}', typeMap[venue.type])
+                .replace('{venue}', venue.name);
+
+            const content = getRandomElement(template.contentTemplates);
+
+            return { title, content };
+        }
+
+        async function createReviewsForCity(city, venues) {
+            const reviews = [];
+            
+            for (const venue of venues) {
+                // Create 2-3 reviews per venue
+                const numReviews = getRandomInt(2, 3);
+                
+                for (let i = 0; i < numReviews; i++) {
+                    const user = getRandomElement(demoUsers);
+                    const template = getRandomElement(reviewTemplates);
+                    const { title, content } = generateReviewContent(venue, template);
+                    const images = imageUrls[venue.type] || imageUrls.coffee;
+                    
+                    // Random subject details
+                    const subjectNames = [
+                        'Jessica Williams', 'Ryan Cooper', 'Amanda Zhang', 'Marcus Johnson',
+                        'Sofia Rodriguez', 'Daniel Park', 'Olivia Brown', 'Nathan Lee',
+                        'Emily Watson', 'Christopher Miller', 'Isabella Garcia', 'Matthew Davis'
+                    ];
+                    
+                    const review = {
+                        authorId: user.id,
+                        authorName: user.name,
+                        subjectName: getRandomElement(subjectNames),
+                        subjectAge: getRandomInt(24, 38),
+                        subjectGender: Math.random() > 0.5 ? 'male' : 'female',
+                        category: venue.type,
+                        dateDuration: getRandomElement(['oneToTwoHours', 'twoToThreeHours', 'threeToFourHours', 'moreThanFourHours']),
+                        dateYear: getRandomElement([2023, 2024]),
+                        dateMonth: getRandomInt(1, 12),
+                        relationshipType: getRandomElement(['casual', 'serious', 'friendship', 'undefined']),
+                        title: title,
+                        content: content,
+                        rating: template.rating,
+                        wouldRecommend: template.wouldRecommend,
+                        location: { 
+                            city: city, 
+                            state: getStateForCity(city), 
+                            country: 'USA',
+                            venue: venue.name,
+                            address: venue.address
+                        },
+                        venue: venue.name,
+                        tags: generateTags(venue.type, template.rating),
+                        imageUrls: [getRandomElement(images)], // Each review gets one image
+                        isAnonymous: Math.random() > 0.8, // 20% anonymous
+                        stats: {
+                            views: getRandomInt(50, 500),
+                            likes: getRandomInt(5, 100),
+                            comments: getRandomInt(0, 20),
+                            shares: getRandomInt(0, 15),
+                            helpful: getRandomInt(10, 80),
+                            notHelpful: getRandomInt(0, 10)
+                        },
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    reviews.push(review);
+                }
+            }
+            
+            return reviews;
+        }
+
+        function getStateForCity(city) {
+            const stateMap = {
+                'New York': 'NY',
+                'Los Angeles': 'CA',
+                'Chicago': 'IL',
+                'San Francisco': 'CA',
+                'Miami': 'FL',
+                'Boston': 'MA',
+                'Seattle': 'WA',
+                'Austin': 'TX',
+                'Denver': 'CO',
+                'Portland': 'OR'
+            };
+            return stateMap[city] || 'Unknown';
+        }
+
+        function generateTags(type, rating) {
+            const baseTags = {
+                'coffee': ['coffee', 'casual', 'daytime'],
+                'dinner': ['dinner', 'romantic', 'evening'],
+                'drinks': ['drinks', 'nightlife', 'bar'],
+                'activity': ['fun', 'active', 'experience'],
+                'outdoor': ['outdoor', 'nature', 'adventure'],
+                'brunch': ['brunch', 'weekend', 'relaxed']
+            };
+            
+            const tags = [...(baseTags[type] || ['date'])];
+            
+            if (rating === 5) tags.push('amazing', 'highly-recommended');
+            if (rating === 4) tags.push('great', 'recommended');
+            if (rating === 3) tags.push('decent', 'okay');
+            
+            tags.push('firstdate', getRandomElement(['chemistry', 'conversation', 'atmosphere']));
+            
+            return tags.slice(0, 5); // Limit to 5 tags
+        }
+
+        async function signInAndGenerate() {
+            try {
+                document.getElementById('mainBtn').disabled = true;
+                log('Signing in to Firebase...');
+                updateStatus('Authenticating...', 'info');
+                
+                // Sign in anonymously
+                await auth.signInAnonymously();
+                log('Authentication successful!', 'success');
+                
+                // Start generation
+                await generateAllDemoData();
+                
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+                updateStatus(`Failed: ${error.message}`, 'error');
+                document.getElementById('mainBtn').disabled = false;
+            }
+        }
+
+        async function generateAllDemoData() {
+            try {
+                updateStatus('Generating demo data for all cities...', 'info');
+                log('Starting demo data generation for major cities...');
+                
+                const cities = Object.keys(cityData);
+                totalCities = cities.length;
+                let processedCities = 0;
+                
+                for (const city of cities) {
+                    log(`Processing ${city}...`);
+                    const venues = cityData[city].venues;
+                    const reviews = await createReviewsForCity(city, venues);
+                    
+                    // Add reviews to Firestore in batches
+                    const batch = db.batch();
+                    let batchCount = 0;
+                    
+                    for (const review of reviews) {
+                        const docRef = db.collection('reviews').doc();
+                        batch.set(docRef, review);
+                        batchCount++;
+                        
+                        // Commit batch every 100 documents (Firestore limit is 500)
+                        if (batchCount === 100) {
+                            await batch.commit();
+                            log(`Committed batch of ${batchCount} reviews`, 'success');
+                            batchCount = 0;
+                        }
+                    }
+                    
+                    // Commit remaining documents
+                    if (batchCount > 0) {
+                        await batch.commit();
+                        log(`Committed batch of ${batchCount} reviews`, 'success');
+                    }
+                    
+                    totalReviews += reviews.length;
+                    totalImages += reviews.length; // Each review has one image
+                    processedCities++;
+                    
+                    // Update progress
+                    const progress = (processedCities / totalCities) * 100;
+                    updateProgress(progress, `Processed ${city} (${reviews.length} reviews)`);
+                    updateStats();
+                    
+                    log(`✅ ${city}: Created ${reviews.length} reviews with images`, 'success');
+                }
+                
+                updateStatus(`🎉 Successfully created ${totalReviews} reviews across ${totalCities} cities!`, 'success');
+                log(`Generation complete! Total: ${totalReviews} reviews, ${totalImages} images`, 'success');
+                document.getElementById('mainBtn').disabled = false;
+                
+            } catch (error) {
+                log(`Error generating data: ${error.message}`, 'error');
+                updateStatus(`Failed to generate data: ${error.message}`, 'error');
+                document.getElementById('mainBtn').disabled = false;
+            }
+        }
+
+        async function clearAllReviews() {
+            if (!confirm('Are you sure you want to delete ALL reviews? This cannot be undone!')) {
+                return;
+            }
+            
+            try {
+                log('Clearing all reviews...');
+                updateStatus('Deleting all reviews...', 'warning');
+                
+                const snapshot = await db.collection('reviews').get();
+                const batch = db.batch();
+                let count = 0;
+                
+                snapshot.forEach(doc => {
+                    batch.delete(doc.ref);
+                    count++;
+                });
+                
+                await batch.commit();
+                
+                log(`Deleted ${count} reviews`, 'success');
+                updateStatus(`Successfully deleted ${count} reviews`, 'success');
+                
+                // Reset stats
+                totalReviews = 0;
+                totalImages = 0;
+                totalCities = 0;
+                updateStats();
+                
+            } catch (error) {
+                log(`Error clearing reviews: ${error.message}`, 'error');
+                updateStatus(`Failed to clear reviews: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            updateStats();
+            log('Demo data generator ready! Click "Generate All Demo Data" to begin.');
+        });
+    </script>
+</body>
+</html>

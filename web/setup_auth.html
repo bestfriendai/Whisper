@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setup Firebase Auth - Locker Room Talk</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        .content {
+            padding: 40px;
+        }
+        .step {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+        .step-number {
+            position: absolute;
+            left: -20px;
+            top: 20px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .step h3 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-left: 30px;
+        }
+        .step p {
+            color: #666;
+            line-height: 1.6;
+            padding-left: 30px;
+        }
+        .step ol {
+            padding-left: 50px;
+            margin-top: 15px;
+        }
+        .step li {
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+        .warning-icon {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #155724;
+        }
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            padding-left: 30px;
+        }
+        .code {
+            background: #2d3748;
+            color: #48bb78;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+        .check-item input[type="checkbox"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .check-item label {
+            cursor: pointer;
+            flex: 1;
+            color: #333;
+        }
+        .status {
+            padding: 20px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .status h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Setup Firebase Authentication</h1>
+            <p>Complete these steps to enable authentication for Locker Room Talk</p>
+        </div>
+        
+        <div class="content">
+            <div class="warning">
+                <span class="warning-icon">⚠️</span>
+                <strong>Important:</strong> Firebase Authentication needs to be initialized in the Firebase Console before it can be used.
+            </div>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Initialize Authentication Service</h3>
+                <p>First, we need to initialize the Authentication service in Firebase Console:</p>
+                <div class="links">
+                    <a href="https://console.firebase.google.com/project/locker-room-talk-app/authentication" target="_blank" class="btn pulse">
+                        Open Firebase Console →
+                    </a>
+                </div>
+                <ol>
+                    <li>Click the <strong>"Get Started"</strong> button</li>
+                    <li>This will initialize the Authentication service</li>
+                    <li>Wait for the page to load (about 5-10 seconds)</li>
+                </ol>
+                <div class="check-item">
+                    <input type="checkbox" id="step1" onchange="updateProgress()">
+                    <label for="step1">I've clicked "Get Started" and the Auth dashboard loaded</label>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Enable Anonymous Authentication</h3>
+                <p>Enable anonymous sign-in for guest users:</p>
+                <ol>
+                    <li>In the Firebase Console, click on <strong>"Sign-in method"</strong> tab</li>
+                    <li>Find <strong>"Anonymous"</strong> in the list</li>
+                    <li>Click on it and toggle <strong>"Enable"</strong></li>
+                    <li>Click <strong>"Save"</strong></li>
+                </ol>
+                <div class="check-item">
+                    <input type="checkbox" id="step2" onchange="updateProgress()">
+                    <label for="step2">Anonymous authentication is enabled</label>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Enable Email/Password Authentication</h3>
+                <p>Enable email/password sign-in for registered users:</p>
+                <ol>
+                    <li>Still in the <strong>"Sign-in method"</strong> tab</li>
+                    <li>Find <strong>"Email/Password"</strong> in the list</li>
+                    <li>Click on it and toggle <strong>"Enable"</strong> (first option only)</li>
+                    <li>Click <strong>"Save"</strong></li>
+                </ol>
+                <div class="check-item">
+                    <input type="checkbox" id="step3" onchange="updateProgress()">
+                    <label for="step3">Email/Password authentication is enabled</label>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Optional: Enable Google Sign-In</h3>
+                <p>For easier sign-in, you can also enable Google authentication:</p>
+                <ol>
+                    <li>Find <strong>"Google"</strong> in the sign-in providers list</li>
+                    <li>Click on it and toggle <strong>"Enable"</strong></li>
+                    <li>Add a <strong>Project support email</strong> (your email)</li>
+                    <li>Click <strong>"Save"</strong></li>
+                </ol>
+                <div class="check-item">
+                    <input type="checkbox" id="step4" onchange="updateProgress()">
+                    <label for="step4">Google authentication is enabled (optional)</label>
+                </div>
+            </div>
+
+            <div class="status" id="status">
+                <h3>Setup Progress</h3>
+                <p id="progress-text">Complete the steps above to enable authentication</p>
+            </div>
+
+            <div class="step" style="background: #f0f7ff; border-left-color: #28a745;">
+                <div class="step-number" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">✓</div>
+                <h3>Test Your Setup</h3>
+                <p>Once you've completed the steps above, test your authentication:</p>
+                <div class="links">
+                    <a href="/init_firebase.html" class="btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        Test Firebase Connection →
+                    </a>
+                    <a href="http://localhost:3000" class="btn">
+                        Open Your App →
+                    </a>
+                </div>
+            </div>
+
+            <div class="success">
+                <strong>🎉 Almost Done!</strong> After enabling authentication providers, your app will be fully functional. 
+                Users will be able to sign up, sign in, and browse as guests.
+            </div>
+
+            <div class="step" style="background: #fff;">
+                <h3>Quick Links</h3>
+                <div class="links">
+                    <a href="https://console.firebase.google.com/project/locker-room-talk-app/authentication/users" target="_blank" class="btn" style="background: #6c757d;">
+                        View Users
+                    </a>
+                    <a href="https://console.firebase.google.com/project/locker-room-talk-app/firestore" target="_blank" class="btn" style="background: #6c757d;">
+                        View Database
+                    </a>
+                    <a href="https://console.firebase.google.com/project/locker-room-talk-app/storage" target="_blank" class="btn" style="background: #6c757d;">
+                        Setup Storage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const total = checkboxes.length;
+            const progressText = document.getElementById('progress-text');
+            const statusDiv = document.getElementById('status');
+            
+            if (checked === 0) {
+                progressText.textContent = 'Complete the steps above to enable authentication';
+                statusDiv.style.background = '#e3f2fd';
+            } else if (checked < 3) {
+                progressText.textContent = `Progress: ${checked}/${total} steps completed`;
+                statusDiv.style.background = '#fff3cd';
+            } else if (checked === 3) {
+                progressText.textContent = '✅ Basic authentication is ready! You can now test your app.';
+                statusDiv.style.background = '#d4edda';
+            } else {
+                progressText.textContent = '🎉 All authentication methods enabled! Your app is fully configured.';
+                statusDiv.style.background = '#d4edda';
+            }
+        }
+        
+        // Load saved progress
+        window.onload = function() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                const saved = localStorage.getItem(cb.id);
+                if (saved === 'true') {
+                    cb.checked = true;
+                }
+            });
+            updateProgress();
+        };
+        
+        // Save progress
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', function() {
+                localStorage.setItem(this.id, this.checked);
+            });
+        });
+    </script>
+</body>
+</html>

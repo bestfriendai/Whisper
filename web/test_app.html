@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Locker Room Talk App</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        .test-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        #results {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .result-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+        .locker-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <div class="locker-icon">🔒</div>
+                Locker Room Talk - Test Suite
+            </h1>
+            <p>Verify your Firebase setup is working correctly</p>
+        </div>
+        
+        <div class="content">
+            <div class="test-section">
+                <h3>🔐 1. Authentication Test</h3>
+                <button onclick="testAnonymousAuth()">Test Anonymous Login</button>
+                <button onclick="testEmailAuth()">Test Email Signup</button>
+                <button onclick="signOut()">Sign Out</button>
+                <div id="auth-status" class="status info" style="margin-top: 15px;">
+                    Not authenticated yet
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h3>💾 2. Database Test</h3>
+                <button onclick="createTestData()" id="createDataBtn">Create Sample Reviews</button>
+                <button onclick="readReviews()">Read Reviews</button>
+                <button onclick="clearData()">Clear Test Data</button>
+                <div id="db-status" class="status info" style="margin-top: 15px;">
+                    Click buttons to test database operations
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h3>📊 3. Statistics</h3>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="user-count">0</div>
+                        <div class="stat-label">Current User</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="review-count">0</div>
+                        <div class="stat-label">Total Reviews</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="auth-method">None</div>
+                        <div class="stat-label">Auth Method</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h3>📝 Results</h3>
+                <div id="results">
+                    <p style="color: #6c757d;">Test results will appear here...</p>
+                </div>
+            </div>
+
+            <div class="test-section" style="background: #e8f5e9;">
+                <h3>✅ Everything Working?</h3>
+                <p style="margin-bottom: 15px;">If all tests pass, your app is ready to use!</p>
+                <button onclick="window.open('http://localhost:3000', '_blank')" style="background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);">
+                    🚀 Open Locker Room Talk App
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcdGoo6Z2uHXNmFyXnKdltwrMUXPcp_4A",
+            authDomain: "locker-room-talk-app.firebaseapp.com",
+            projectId: "locker-room-talk-app",
+            storageBucket: "locker-room-talk-app.firebasestorage.app",
+            messagingSenderId: "514288923681",
+            appId: "1:514288923681:web:aa8d8134086ec33ebc5f60"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Monitor auth state
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                updateAuthStatus(`Authenticated as: ${user.isAnonymous ? 'Anonymous User' : user.email || 'User'} (${user.uid.substring(0, 8)}...)`, 'success');
+                document.getElementById('user-count').textContent = '1';
+                document.getElementById('auth-method').textContent = user.isAnonymous ? 'Anonymous' : 'Email';
+            } else {
+                updateAuthStatus('Not authenticated', 'info');
+                document.getElementById('user-count').textContent = '0';
+                document.getElementById('auth-method').textContent = 'None';
+            }
+        });
+
+        function updateAuthStatus(message, type) {
+            const status = document.getElementById('auth-status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function updateDbStatus(message, type) {
+            const status = document.getElementById('db-status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const item = document.createElement('div');
+            item.className = 'result-item';
+            const time = new Date().toLocaleTimeString();
+            item.innerHTML = `<strong>[${time}]</strong> ${message}`;
+            results.insertBefore(item, results.firstChild);
+        }
+
+        async function testAnonymousAuth() {
+            try {
+                addResult('Testing anonymous authentication...');
+                const result = await auth.signInAnonymously();
+                addResult(`✅ Anonymous auth successful! User ID: ${result.user.uid}`, 'success');
+                updateAuthStatus(`Signed in anonymously (${result.user.uid.substring(0, 8)}...)`, 'success');
+            } catch (error) {
+                addResult(`❌ Auth error: ${error.message}`, 'error');
+                updateAuthStatus(`Authentication failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testEmailAuth() {
+            try {
+                const email = `test${Date.now()}@example.com`;
+                const password = 'testpass123';
+                addResult(`Creating account with email: ${email}`);
+                const result = await auth.createUserWithEmailAndPassword(email, password);
+                addResult(`✅ Email signup successful! User: ${result.user.email}`, 'success');
+                updateAuthStatus(`Signed up as ${result.user.email}`, 'success');
+            } catch (error) {
+                addResult(`❌ Signup error: ${error.message}`, 'error');
+                updateAuthStatus(`Signup failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function signOut() {
+            try {
+                await auth.signOut();
+                addResult('✅ Signed out successfully');
+                updateAuthStatus('Signed out', 'info');
+            } catch (error) {
+                addResult(`❌ Sign out error: ${error.message}`, 'error');
+            }
+        }
+
+        async function createTestData() {
+            try {
+                if (!auth.currentUser) {
+                    addResult('⚠️ Please sign in first!', 'warning');
+                    return;
+                }
+
+                addResult('Creating sample reviews...');
+                updateDbStatus('Writing to database...', 'info');
+
+                const reviews = [
+                    {
+                        authorId: auth.currentUser.uid,
+                        subjectName: 'Sarah Johnson',
+                        subjectAge: 28,
+                        title: 'Perfect Coffee Date ☕',
+                        content: 'Met at Blue Bottle Coffee. Great conversation about travel and books. Really enjoyed the laid-back vibe.',
+                        rating: 5,
+                        venue: 'Blue Bottle Coffee',
+                        location: { city: 'San Francisco', state: 'CA', country: 'USA' },
+                        wouldRecommend: true,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    },
+                    {
+                        authorId: auth.currentUser.uid,
+                        subjectName: 'Mike Chen',
+                        subjectAge: 32,
+                        title: 'Fun Beach Day 🏖️',
+                        content: 'Spent the afternoon at Santa Monica Beach. Played volleyball and watched the sunset. Great energy!',
+                        rating: 4,
+                        venue: 'Santa Monica Beach',
+                        location: { city: 'Los Angeles', state: 'CA', country: 'USA' },
+                        wouldRecommend: true,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    },
+                    {
+                        authorId: auth.currentUser.uid,
+                        subjectName: 'Emily Davis',
+                        subjectAge: 26,
+                        title: 'Romantic Dinner 🍷',
+                        content: 'Amazing Italian restaurant downtown. The ambiance was perfect and the conversation flowed naturally.',
+                        rating: 5,
+                        venue: 'Bella Vista Restaurant',
+                        location: { city: 'New York', state: 'NY', country: 'USA' },
+                        wouldRecommend: true,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                ];
+
+                let created = 0;
+                for (const review of reviews) {
+                    const docRef = await db.collection('reviews').add(review);
+                    created++;
+                    addResult(`✅ Created review: "${review.title}" (ID: ${docRef.id})`);
+                }
+
+                updateDbStatus(`Successfully created ${created} reviews!`, 'success');
+                document.getElementById('review-count').textContent = created.toString();
+                
+            } catch (error) {
+                addResult(`❌ Database error: ${error.message}`, 'error');
+                updateDbStatus(`Failed to create data: ${error.message}`, 'error');
+            }
+        }
+
+        async function readReviews() {
+            try {
+                addResult('Reading reviews from database...');
+                updateDbStatus('Fetching reviews...', 'info');
+
+                const snapshot = await db.collection('reviews')
+                    .orderBy('createdAt', 'desc')
+                    .limit(10)
+                    .get();
+
+                if (snapshot.empty) {
+                    addResult('⚠️ No reviews found. Create some test data first!', 'warning');
+                    updateDbStatus('No reviews in database', 'warning');
+                    return;
+                }
+
+                addResult(`✅ Found ${snapshot.size} reviews:`);
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    addResult(`📝 "${data.title}" - Rating: ${data.rating}/5 - ${data.venue || 'Unknown venue'}`);
+                });
+
+                updateDbStatus(`Successfully read ${snapshot.size} reviews`, 'success');
+                document.getElementById('review-count').textContent = snapshot.size.toString();
+
+            } catch (error) {
+                if (error.code === 'permission-denied') {
+                    addResult('❌ Permission denied. Please sign in first!', 'error');
+                } else if (error.code === 'failed-precondition') {
+                    addResult('⚠️ Database index required. This will be created automatically.', 'warning');
+                } else {
+                    addResult(`❌ Read error: ${error.message}`, 'error');
+                }
+                updateDbStatus(`Failed to read data: ${error.message}`, 'error');
+            }
+        }
+
+        async function clearData() {
+            try {
+                if (!auth.currentUser) {
+                    addResult('⚠️ Please sign in first!', 'warning');
+                    return;
+                }
+
+                addResult('Clearing test data...');
+                const snapshot = await db.collection('reviews')
+                    .where('authorId', '==', auth.currentUser.uid)
+                    .get();
+
+                const batch = db.batch();
+                snapshot.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+
+                await batch.commit();
+                addResult(`✅ Cleared ${snapshot.size} reviews`);
+                updateDbStatus('Test data cleared', 'success');
+                document.getElementById('review-count').textContent = '0';
+
+            } catch (error) {
+                addResult(`❌ Clear error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addResult('🚀 Firebase Test Suite Ready!');
+                addResult('Click "Test Anonymous Login" to start testing');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

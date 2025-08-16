@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Firebase Auth - Locker Room Talk</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        #log {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Firebase Authentication Test</h1>
+        
+        <div class="test-section">
+            <h3>1. Anonymous Authentication Test</h3>
+            <button onclick="testAnonymousAuth()" id="anonBtn">Test Anonymous Sign-In</button>
+            <div id="anonStatus" class="status info">Click to test anonymous authentication</div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Email/Password Authentication Test</h3>
+            <input type="email" id="emailInput" placeholder="Enter test email" value="test@example.com">
+            <input type="password" id="passwordInput" placeholder="Enter password" value="testpass123">
+            <div>
+                <button onclick="testEmailSignUp()" id="signUpBtn">Test Email Sign-Up</button>
+                <button onclick="testEmailSignIn()" id="signInBtn">Test Email Sign-In</button>
+                <button onclick="signOut()" id="signOutBtn">Sign Out</button>
+            </div>
+            <div id="emailStatus" class="status info">Click to test email authentication</div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Current Authentication State</h3>
+            <div id="authState" class="status info">Not authenticated</div>
+            <button onclick="checkAuthState()">Refresh Auth State</button>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Firebase Console Links</h3>
+            <p>If tests fail, check these Firebase Console settings:</p>
+            <ul>
+                <li><a href="https://console.firebase.google.com/project/locker-room-talk-app/authentication/providers" target="_blank">Authentication Providers</a></li>
+                <li><a href="https://console.firebase.google.com/project/locker-room-talk-app/authentication/users" target="_blank">User Management</a></li>
+                <li><a href="https://console.firebase.google.com/project/locker-room-talk-app/settings/general" target="_blank">Project Settings</a></li>
+            </ul>
+        </div>
+
+        <div id="log">
+            <div>Ready to test Firebase Authentication...</div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcdGoo6Z2uHXNmFyXnKdltwrMUXPcp_4A",
+            authDomain: "locker-room-talk-app.firebaseapp.com",
+            projectId: "locker-room-talk-app",
+            storageBucket: "locker-room-talk-app.firebasestorage.app",
+            messagingSenderId: "514288923681",
+            appId: "1:514288923681:web:aa8d8134086ec33ebc5f60"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            const time = new Date().toLocaleTimeString();
+            
+            let icon = '📝';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'warning') icon = '⚠️';
+            
+            entry.innerHTML = `[${time}] ${icon} ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.className = `status ${type}`;
+            element.textContent = message;
+        }
+
+        // Monitor auth state changes
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const authType = user.isAnonymous ? 'Anonymous' : 'Email/Password';
+                const userInfo = user.isAnonymous 
+                    ? `Anonymous (${user.uid.substring(0, 8)}...)`
+                    : `${user.email} (${user.uid.substring(0, 8)}...)`;
+                
+                updateStatus('authState', `Authenticated as ${authType}: ${userInfo}`, 'success');
+                log(`Auth state changed: ${userInfo}`, 'success');
+            } else {
+                updateStatus('authState', 'Not authenticated', 'info');
+                log('Auth state changed: Signed out', 'info');
+            }
+        });
+
+        async function testAnonymousAuth() {
+            try {
+                document.getElementById('anonBtn').disabled = true;
+                updateStatus('anonStatus', 'Testing anonymous authentication...', 'info');
+                log('Starting anonymous authentication test...');
+                
+                const result = await auth.signInAnonymously();
+                
+                updateStatus('anonStatus', `✅ Anonymous auth successful! User ID: ${result.user.uid}`, 'success');
+                log(`Anonymous auth successful: ${result.user.uid}`, 'success');
+                
+            } catch (error) {
+                updateStatus('anonStatus', `❌ Anonymous auth failed: ${error.message}`, 'error');
+                log(`Anonymous auth error: ${error.code} - ${error.message}`, 'error');
+                
+                if (error.code === 'auth/operation-not-allowed') {
+                    log('Anonymous authentication is not enabled in Firebase Console', 'warning');
+                }
+            } finally {
+                document.getElementById('anonBtn').disabled = false;
+            }
+        }
+
+        async function testEmailSignUp() {
+            try {
+                const email = document.getElementById('emailInput').value;
+                const password = document.getElementById('passwordInput').value;
+                
+                if (!email || !password) {
+                    updateStatus('emailStatus', '❌ Please enter email and password', 'error');
+                    return;
+                }
+                
+                document.getElementById('signUpBtn').disabled = true;
+                updateStatus('emailStatus', 'Creating new user account...', 'info');
+                log(`Testing email sign-up for: ${email}`);
+                
+                const result = await auth.createUserWithEmailAndPassword(email, password);
+                
+                updateStatus('emailStatus', `✅ Email sign-up successful! User: ${result.user.email}`, 'success');
+                log(`Email sign-up successful: ${result.user.email}`, 'success');
+                
+            } catch (error) {
+                updateStatus('emailStatus', `❌ Sign-up failed: ${error.message}`, 'error');
+                log(`Email sign-up error: ${error.code} - ${error.message}`, 'error');
+                
+                if (error.code === 'auth/operation-not-allowed') {
+                    log('Email/Password authentication is not enabled in Firebase Console', 'warning');
+                } else if (error.code === 'auth/email-already-in-use') {
+                    log('Email already exists, try signing in instead', 'warning');
+                } else if (error.code === 'auth/weak-password') {
+                    log('Password is too weak, use at least 6 characters', 'warning');
+                } else if (error.code === 'auth/invalid-email') {
+                    log('Invalid email format', 'warning');
+                }
+            } finally {
+                document.getElementById('signUpBtn').disabled = false;
+            }
+        }
+
+        async function testEmailSignIn() {
+            try {
+                const email = document.getElementById('emailInput').value;
+                const password = document.getElementById('passwordInput').value;
+                
+                if (!email || !password) {
+                    updateStatus('emailStatus', '❌ Please enter email and password', 'error');
+                    return;
+                }
+                
+                document.getElementById('signInBtn').disabled = true;
+                updateStatus('emailStatus', 'Signing in...', 'info');
+                log(`Testing email sign-in for: ${email}`);
+                
+                const result = await auth.signInWithEmailAndPassword(email, password);
+                
+                updateStatus('emailStatus', `✅ Email sign-in successful! User: ${result.user.email}`, 'success');
+                log(`Email sign-in successful: ${result.user.email}`, 'success');
+                
+            } catch (error) {
+                updateStatus('emailStatus', `❌ Sign-in failed: ${error.message}`, 'error');
+                log(`Email sign-in error: ${error.code} - ${error.message}`, 'error');
+                
+                if (error.code === 'auth/user-not-found') {
+                    log('No account found with this email, try signing up first', 'warning');
+                } else if (error.code === 'auth/wrong-password') {
+                    log('Incorrect password', 'warning');
+                } else if (error.code === 'auth/invalid-email') {
+                    log('Invalid email format', 'warning');
+                }
+            } finally {
+                document.getElementById('signInBtn').disabled = false;
+            }
+        }
+
+        async function signOut() {
+            try {
+                await auth.signOut();
+                updateStatus('emailStatus', '✅ Signed out successfully', 'success');
+                log('Signed out successfully', 'success');
+            } catch (error) {
+                updateStatus('emailStatus', `❌ Sign out failed: ${error.message}`, 'error');
+                log(`Sign out error: ${error.message}`, 'error');
+            }
+        }
+
+        function checkAuthState() {
+            const user = auth.currentUser;
+            if (user) {
+                const authType = user.isAnonymous ? 'Anonymous' : 'Email/Password';
+                const userInfo = user.isAnonymous 
+                    ? `Anonymous (${user.uid.substring(0, 8)}...)`
+                    : `${user.email} (${user.uid.substring(0, 8)}...)`;
+                
+                updateStatus('authState', `Authenticated as ${authType}: ${userInfo}`, 'success');
+                log(`Current user: ${userInfo}`, 'success');
+            } else {
+                updateStatus('authState', 'Not authenticated', 'info');
+                log('No current user', 'info');
+            }
+        }
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            log('Firebase Authentication Test Suite Ready!');
+            log('Click the buttons above to test different auth methods');
+            checkAuthState();
+        });
+    </script>
+</body>
+</html>

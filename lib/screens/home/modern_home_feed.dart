@@ -850,19 +850,81 @@ class _ModernHomeFeedState extends State<ModernHomeFeed>
   }
 
   Widget _buildRatingStars(double rating, {double size = 16}) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(5, (index) {
-        final filled = index < rating.floor();
-        final halfFilled = index == rating.floor() && rating % 1 >= 0.5;
-        
-        return Icon(
-          halfFilled ? Icons.star_half : Icons.star,
-          size: size,
-          color: filled || halfFilled ? Colors.amber : Colors.grey.shade300,
-        );
-      }),
-    );
+    // Convert rating to flags: 4-5 = green flags, 1-2 = red flags, 3 = mixed
+    final greenCount = rating >= 4 ? rating.round() - 2 : 0;
+    final redCount = rating <= 2 ? 3 - rating.round() : 0;
+    final isMixed = rating == 3;
+    
+    if (greenCount > 0) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        decoration: BoxDecoration(
+          color: Colors.green.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.flag, color: Colors.green, size: size),
+            SizedBox(width: 4),
+            Text(
+              '+$greenCount',
+              style: TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+                fontSize: size * 0.8,
+              ),
+            ),
+          ],
+        ),
+      );
+    } else if (redCount > 0) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.flag, color: Colors.red, size: size),
+            SizedBox(width: 4),
+            Text(
+              '-$redCount',
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+                fontSize: size * 0.8,
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        decoration: BoxDecoration(
+          color: Colors.orange.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.flag, color: Colors.orange, size: size),
+            SizedBox(width: 2),
+            Text(
+              'Mixed',
+              style: TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+                fontSize: size * 0.7,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   Widget _buildStatChip(IconData icon, String value) {

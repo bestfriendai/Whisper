@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:lockerroomtalk/providers/app_state_provider.dart';
 import 'package:lockerroomtalk/screens/auth/modern_auth_screen.dart';
 import 'package:lockerroomtalk/screens/onboarding/onboarding_flow.dart';
-import 'package:lockerroomtalk/screens/app_shell.dart';
+import 'package:lockerroomtalk/screens/simple_app_shell.dart';
 import 'package:lockerroomtalk/widgets/enhanced_loading.dart';
 
 class AuthWrapper extends StatelessWidget {
@@ -23,14 +23,14 @@ class AuthWrapper extends StatelessWidget {
 
         // Check guest mode first
         if (appState.isGuest) {
-          return const AppShell();
+          return const SimpleAppShell();
         }
         
         // Then check authentication
         if (appState.isAuthenticated) {
           // Check if user has completed onboarding
           if (appState.currentUser?.username?.isNotEmpty == true) {
-            return const AppShell();
+            return const SimpleAppShell();
           } else {
             return const OnboardingFlow();
           }

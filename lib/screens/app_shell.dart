@@ -9,6 +9,7 @@ import 'package:lockerroomtalk/screens/explore/explore_screen.dart';
 import 'package:lockerroomtalk/screens/create/create_review_screen_modern.dart';
 import 'package:lockerroomtalk/screens/chat/chat_list_screen.dart';
 import 'package:lockerroomtalk/screens/profile/profile_screen_modern.dart';
+import 'package:lockerroomtalk/screens/auth/modern_auth_screen.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -123,9 +124,11 @@ class _AppShellState extends State<AppShell> with TickerProviderStateMixin {
             onPressed: () {
               Navigator.pop(context);
               // Navigate to auth screen
-              Navigator.pushNamedAndRemoveUntil(
+              Navigator.pushAndRemoveUntil(
                 context,
-                '/auth',
+                MaterialPageRoute(
+                  builder: (context) => const ModernAuthScreen(),
+                ),
                 (route) => false,
               );
             },

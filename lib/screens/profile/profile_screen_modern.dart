@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:lockerroomtalk/providers/app_state_provider.dart';
 import 'package:lockerroomtalk/models/user.dart';
 import 'package:lockerroomtalk/models/review.dart';
+import 'package:lockerroomtalk/screens/auth/modern_auth_screen.dart';
 
 class ProfileScreenModern extends StatefulWidget {
   const ProfileScreenModern({super.key});
@@ -136,9 +137,11 @@ class _ProfileScreenModernState extends State<ProfileScreenModern>
                       height: 56,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamedAndRemoveUntil(
+                          Navigator.pushAndRemoveUntil(
                             context,
-                            '/auth',
+                            MaterialPageRoute(
+                              builder: (context) => const ModernAuthScreen(),
+                            ),
                             (route) => false,
                           );
                         },
@@ -192,9 +195,11 @@ class _ProfileScreenModernState extends State<ProfileScreenModern>
           title: 'Exit Guest Mode',
           onTap: () {
             context.read<AppStateProvider>().exitGuestMode();
-            Navigator.pushNamedAndRemoveUntil(
+            Navigator.pushAndRemoveUntil(
               context,
-              '/auth',
+              MaterialPageRoute(
+                builder: (context) => const ModernAuthScreen(),
+              ),
               (route) => false,
             );
           },

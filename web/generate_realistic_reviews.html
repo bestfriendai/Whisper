@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Realistic Dating Reviews - Locker Room Talk</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .flag-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .green-flags {
+            background: #d4edda;
+            color: #155724;
+        }
+        .red-flags {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        #log {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Generate Realistic Dating Reviews</h1>
+            <p>Create authentic good & bad dating experiences with flag system</p>
+        </div>
+        
+        <div class="content">
+            <div style="text-align: center; margin: 20px 0;">
+                <button onclick="generateRealisticReviews()" id="generateBtn" style="font-size: 18px; padding: 15px 30px;">
+                    🚀 Generate Realistic Reviews
+                </button>
+                <button onclick="clearAllReviews()" style="background: #dc3545;">
+                    🗑️ Clear All Reviews
+                </button>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalReviews">0</div>
+                    <div>Total Reviews</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="greenFlagCount">0</div>
+                    <div>🟢 Green Flags</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="redFlagCount">0</div>
+                    <div>🔴 Red Flags</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="mixedCount">0</div>
+                    <div>🟡 Mixed</div>
+                </div>
+            </div>
+
+            <div id="log">
+                <div>Ready to generate realistic dating reviews...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcdGoo6Z2uHXNmFyXnKdltwrMUXPcp_4A",
+            authDomain: "locker-room-talk-app.firebaseapp.com",
+            projectId: "locker-room-talk-app",
+            storageBucket: "locker-room-talk-app.firebasestorage.app",
+            messagingSenderId: "514288923681",
+            appId: "1:514288923681:web:aa8d8134086ec33ebc5f60"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // People images - photos of the people being reviewed (optimized for fast loading)
+        const peopleImages = {
+            male: [
+                'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1480429370139-e0132c086e2a?w=400&h=400&fit=crop&q=80'
+            ],
+            female: [
+                'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop&q=80'
+            ]
+        };
+
+        // Realistic review templates with green and red flags
+        const realisticReviews = {
+            greenFlag: [
+                {
+                    title: "Respectful and genuine connection",
+                    content: "Met for coffee and they were exactly like their profile. Great conversation, asked thoughtful questions, and respected boundaries when I said I wanted to take things slow. Already planning a second date!",
+                    flags: { green: 3, red: 0 },
+                    greenFlags: ["Respectful", "Good listener", "Genuine"],
+                    redFlags: [],
+                    wouldRecommend: true
+                },
+                {
+                    title: "Perfect gentleman, felt completely safe",
+                    content: "He picked a well-lit public restaurant, offered to share his location with a friend, and was totally understanding when I wanted to meet there instead of being picked up. Conversation flowed naturally and he was genuinely interested in getting to know me.",
+                    flags: { green: 4, red: 0 },
+                    greenFlags: ["Safety conscious", "Understanding", "Great communicator", "Respectful"],
+                    redFlags: [],
+                    wouldRecommend: true
+                },
+                {
+                    title: "Honest about intentions and super fun",
+                    content: "She was upfront about looking for something casual which I appreciated. We had amazing chemistry, lots of laughs, and she insisted on splitting the bill. No games, no drama, just a great time.",
+                    flags: { green: 3, red: 0 },
+                    greenFlags: ["Honest", "Fun", "Independent"],
+                    redFlags: [],
+                    wouldRecommend: true
+                },
+                {
+                    title: "Emotionally mature and attentive",
+                    content: "Rare to find someone who can hold deep conversations. They remembered details from our texts, put their phone away during dinner, and made me feel heard. Walking green flag!",
+                    flags: { green: 4, red: 0 },
+                    greenFlags: ["Attentive", "Present", "Emotionally mature", "Good memory"],
+                    redFlags: [],
+                    wouldRecommend: true
+                }
+            ],
+            redFlag: [
+                {
+                    title: "Catfished - looked nothing like photos",
+                    content: "Photos were clearly from 10 years and 50 pounds ago. When I politely mentioned it, they got defensive and said 'looks shouldn't matter.' Then spent the whole date on their phone. Absolute waste of time.",
+                    flags: { green: 0, red: 4 },
+                    greenFlags: [],
+                    redFlags: ["Catfishing", "Defensive", "Rude", "Phone addiction"],
+                    wouldRecommend: false
+                },
+                {
+                    title: "Aggressive and wouldn't take no for an answer",
+                    content: "Kept pushing for me to come back to their place even after I said no multiple times. Got angry when I wanted to leave early and called me 'uptight.' Trust your gut, ladies. Big red flags everywhere.",
+                    flags: { green: 0, red: 5 },
+                    greenFlags: [],
+                    redFlags: ["Pushy", "Disrespectful", "Aggressive", "Manipulative", "No boundaries"],
+                    wouldRecommend: false
+                },
+                {
+                    title: "Love bombing and super clingy",
+                    content: "Called me their 'soulmate' on the FIRST date. Texted me 47 times the next day when I didn't respond immediately. Already planning our wedding and kids names. RUN.",
+                    flags: { green: 0, red: 4 },
+                    greenFlags: [],
+                    redFlags: ["Love bombing", "Clingy", "No boundaries", "Obsessive"],
+                    wouldRecommend: false
+                },
+                {
+                    title: "Lied about everything - total fraud",
+                    content: "Said they were a doctor, actually unemployed. Said they were single, saw wedding ring tan line. Said they don't drink, got wasted and I had to call them an Uber. Pathological liar.",
+                    flags: { green: 0, red: 5 },
+                    greenFlags: [],
+                    redFlags: ["Liar", "Fake job", "Possibly married", "Drinking problem", "Deceptive"],
+                    wouldRecommend: false
+                },
+                {
+                    title: "Rude to waitstaff and cheap",
+                    content: "Was condescending to our server, complained about everything, and then 'forgot' their wallet. Made sexist comments about women's roles. The entitlement was unreal.",
+                    flags: { green: 0, red: 4 },
+                    greenFlags: [],
+                    redFlags: ["Rude", "Cheap", "Sexist", "Entitled"],
+                    wouldRecommend: false
+                }
+            ],
+            mixed: [
+                {
+                    title: "Great chemistry but moving too fast",
+                    content: "Amazing connection and we talked for hours. Really funny and attractive. But they're already talking about meeting parents and deleting dating apps. Pump the brakes!",
+                    flags: { green: 2, red: 2 },
+                    greenFlags: ["Chemistry", "Attractive"],
+                    redFlags: ["Moving too fast", "Intense"],
+                    wouldRecommend: true
+                },
+                {
+                    title: "Sweet person but no spark",
+                    content: "They were kind, respectful, and clearly put effort into planning the date. Just felt more like hanging with a friend. Nothing wrong with them, just no romantic chemistry.",
+                    flags: { green: 3, red: 1 },
+                    greenFlags: ["Kind", "Respectful", "Thoughtful"],
+                    redFlags: ["No chemistry"],
+                    wouldRecommend: true
+                },
+                {
+                    title: "Fun but unreliable",
+                    content: "When we finally met (after they rescheduled twice), we had a blast. Great sense of humor and very attractive. But the flakiness is a concern. Proceed with caution.",
+                    flags: { green: 2, red: 2 },
+                    greenFlags: ["Fun", "Attractive"],
+                    redFlags: ["Flaky", "Unreliable"],
+                    wouldRecommend: false
+                },
+                {
+                    title: "Successful but arrogant",
+                    content: "Clearly successful and ambitious which is attractive. Picked a nice restaurant and dressed well. But talked about money constantly and name-dropped the entire night. Exhausting.",
+                    flags: { green: 2, red: 3 },
+                    greenFlags: ["Successful", "Well-dressed"],
+                    redFlags: ["Arrogant", "Materialistic", "Self-centered"],
+                    wouldRecommend: false
+                }
+            ]
+        };
+
+        const cities = [
+            'New York', 'Los Angeles', 'Chicago', 'San Francisco', 'Miami',
+            'Boston', 'Seattle', 'Austin', 'Denver', 'Portland',
+            'Phoenix', 'San Diego', 'Dallas', 'Houston', 'Atlanta',
+            'Washington DC', 'Philadelphia', 'Las Vegas', 'Orlando', 'Nashville'
+        ];
+
+        const venues = {
+            coffee: ['Starbucks', 'Local Coffee Shop', 'Blue Bottle', 'Dunkin', 'Peets Coffee'],
+            dinner: ['Italian Restaurant', 'Sushi Bar', 'Steakhouse', 'Thai Place', 'Mexican Restaurant'],
+            bar: ['Rooftop Bar', 'Dive Bar', 'Wine Bar', 'Cocktail Lounge', 'Sports Bar'],
+            outdoor: ['Central Park', 'Beach Walk', 'Hiking Trail', 'Botanical Garden', 'Riverside Walk']
+        };
+
+        const names = [
+            'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Blake', 'Drew',
+            'Sam', 'Jamie', 'Avery', 'Quinn', 'Reese', 'Cameron', 'Skylar', 'Dakota',
+            'Emma', 'Michael', 'Sarah', 'James', 'Jessica', 'David', 'Ashley', 'Chris'
+        ];
+
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            const time = new Date().toLocaleTimeString();
+            entry.innerHTML = `[${time}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function generateRealisticReviews() {
+            try {
+                document.getElementById('generateBtn').disabled = true;
+                log('🔐 Signing in...');
+                
+                await auth.signInAnonymously();
+                log('✅ Authenticated successfully');
+                
+                let totalCount = 0;
+                let greenCount = 0;
+                let redCount = 0;
+                let mixedCount = 0;
+                
+                // Collect all reviews first
+                const allReviews = [];
+                
+                for (const city of cities) {
+                    // Generate 3-5 reviews per city
+                    const reviewCount = getRandomInt(3, 5);
+                    
+                    for (let i = 0; i < reviewCount; i++) {
+                        // 40% green flags, 35% red flags, 25% mixed
+                        const rand = Math.random();
+                        let reviewType, template;
+                        
+                        if (rand < 0.4) {
+                            reviewType = 'greenFlag';
+                            template = getRandomElement(realisticReviews.greenFlag);
+                            greenCount++;
+                        } else if (rand < 0.75) {
+                            reviewType = 'redFlag';
+                            template = getRandomElement(realisticReviews.redFlag);
+                            redCount++;
+                        } else {
+                            reviewType = 'mixed';
+                            template = getRandomElement(realisticReviews.mixed);
+                            mixedCount++;
+                        }
+                        
+                        const venueType = getRandomElement(['coffee', 'dinner', 'bar', 'outdoor']);
+                        const venue = getRandomElement(venues[venueType]);
+                        
+                        // Determine gender and get appropriate person image
+                        const subjectGender = Math.random() > 0.5 ? 'male' : 'female';
+                        const imageUrl = getRandomElement(peopleImages[subjectGender]);
+                        
+                        const review = {
+                            authorId: auth.currentUser.uid,
+                            authorName: getRandomElement(names),
+                            subjectName: getRandomElement(names),
+                            subjectAge: getRandomInt(23, 38),
+                            subjectGender: subjectGender,
+                            title: template.title,
+                            content: template.content,
+                            flags: template.flags,
+                            greenFlags: template.greenFlags,
+                            redFlags: template.redFlags,
+                            wouldRecommend: template.wouldRecommend,
+                            location: {
+                                city: city,
+                                state: getStateForCity(city),
+                                country: 'USA',
+                                venue: venue
+                            },
+                            venue: venue,
+                            category: venueType,
+                            imageUrls: [imageUrl], // Single optimized image
+                            isAnonymous: Math.random() > 0.7,
+                            stats: {
+                                views: getRandomInt(50, 500),
+                                likes: getRandomInt(5, 100),
+                                comments: getRandomInt(0, 30),
+                                helpful: getRandomInt(10, 150)
+                            },
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            // Add fields for backwards compatibility
+                            rating: template.wouldRecommend ? 5 : 1,
+                            dateDuration: getRandomElement(['oneToTwoHours', 'twoToThreeHours', 'threeToFourHours']),
+                            dateYear: 2024,
+                            relationshipType: getRandomElement(['casual', 'serious', 'undefined'])
+                        };
+                        
+                        allReviews.push(review);
+                        totalCount++;
+                    }
+                }
+                
+                // Now batch write all reviews
+                log(`📝 Writing ${totalCount} reviews to database...`);
+                
+                for (let i = 0; i < allReviews.length; i += 50) {
+                    const batch = db.batch();
+                    const batchReviews = allReviews.slice(i, Math.min(i + 50, allReviews.length));
+                    
+                    batchReviews.forEach(review => {
+                        const docRef = db.collection('reviews').doc();
+                        batch.set(docRef, review);
+                    });
+                    
+                    await batch.commit();
+                    log(`💾 Saved batch of ${batchReviews.length} reviews (${i + batchReviews.length}/${totalCount})`);
+                }
+                
+                log(`✅ Successfully generated ${totalCount} realistic reviews!`);
+                log(`🟢 Green flags: ${greenCount}`);
+                log(`🔴 Red flags: ${redCount}`);
+                log(`🟡 Mixed: ${mixedCount}`);
+                
+                document.getElementById('totalReviews').textContent = totalCount;
+                document.getElementById('greenFlagCount').textContent = greenCount;
+                document.getElementById('redFlagCount').textContent = redCount;
+                document.getElementById('mixedCount').textContent = mixedCount;
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+            } finally {
+                document.getElementById('generateBtn').disabled = false;
+            }
+        }
+
+        function getStateForCity(city) {
+            const stateMap = {
+                'New York': 'NY', 'Los Angeles': 'CA', 'Chicago': 'IL',
+                'San Francisco': 'CA', 'Miami': 'FL', 'Boston': 'MA',
+                'Seattle': 'WA', 'Austin': 'TX', 'Denver': 'CO',
+                'Portland': 'OR', 'Phoenix': 'AZ', 'San Diego': 'CA',
+                'Dallas': 'TX', 'Houston': 'TX', 'Atlanta': 'GA',
+                'Washington DC': 'DC', 'Philadelphia': 'PA', 'Las Vegas': 'NV',
+                'Orlando': 'FL', 'Nashville': 'TN'
+            };
+            return stateMap[city] || 'Unknown';
+        }
+
+        async function clearAllReviews() {
+            if (!confirm('Delete ALL reviews? This cannot be undone!')) return;
+            
+            try {
+                log('🗑️ Deleting all reviews...');
+                const snapshot = await db.collection('reviews').get();
+                const batch = db.batch();
+                snapshot.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+                log(`✅ Deleted ${snapshot.size} reviews`);
+                
+                document.getElementById('totalReviews').textContent = '0';
+                document.getElementById('greenFlagCount').textContent = '0';
+                document.getElementById('redFlagCount').textContent = '0';
+                document.getElementById('mixedCount').textContent = '0';
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>

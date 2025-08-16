@@ -59,24 +59,51 @@ class ReviewService {
   Future<List<Review>> getReviews({
     int limit = 20,
     DocumentSnapshot? startAfterDoc,
+    String? startAfter,
     String? category,
+    String filter = 'All',
     String? sortBy = 'createdAt',
     bool descending = true,
   }) async {
     try {
-      Query query = _firestore.collection(_reviewsCollection);
+      Query query = _firestore.collection(_reviewsCollection)
+          .where('visibility', isEqualTo: 'public')
+          .where('moderationStatus', isEqualTo: 'active');
+
+      // Apply filter-based queries
+      switch (filter) {
+        case 'Recent':
+          query = query.orderBy('createdAt', descending: true);
+          break;
+        case 'Popular':
+          query = query.orderBy('stats.likes', descending: true);
+          break;
+        case 'Following':
+          // TODO: Implement following logic when user relationships are added
+          query = query.orderBy('createdAt', descending: true);
+          break;
+        case 'Nearby':
+          // TODO: Implement geo-based queries when location is needed
+          query = query.orderBy('createdAt', descending: true);
+          break;
+        default: // 'All'
+          query = query.orderBy('createdAt', descending: true);
+      }
 
       // Apply category filter if specified
       if (category != null && category != 'all') {
         query = query.where('category', isEqualTo: category);
       }
 
-      // Apply sorting
-      query = query.orderBy(sortBy!, descending: descending);
-
-      // Apply pagination
+      // Apply pagination with string-based cursor
       if (startAfterDoc != null) {
         query = query.startAfterDocument(startAfterDoc);
+      } else if (startAfter != null) {
+        // Get the document to start after
+        final docSnapshot = await _firestore.collection(_reviewsCollection).doc(startAfter).get();
+        if (docSnapshot.exists) {
+          query = query.startAfterDocument(docSnapshot);
+        }
       }
 
       query = query.limit(limit);
@@ -86,7 +113,9 @@ class ReviewService {
           .map((doc) => Review.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      throw Exception('Failed to get reviews: $e');
+      // Return empty list instead of throwing to prevent app crashes
+      debugPrint('Failed to get reviews: $e');
+      return [];
     }
   }
 

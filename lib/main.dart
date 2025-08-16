@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:lockerroomtalk/firebase_options.dart';
-import 'package:lockerroomtalk/theme/modern_theme.dart';
+import 'package:lockerroomtalk/design_system/app_theme.dart';
 import 'package:lockerroomtalk/screens/auth/auth_wrapper.dart';
 import 'package:lockerroomtalk/screens/settings/settings_screen.dart';
 import 'package:lockerroomtalk/screens/notifications/notifications_screen.dart';
@@ -177,8 +177,8 @@ class LockerRoomTalkApp extends StatelessWidget {
           return MaterialApp(
             title: 'Locker Room Talk',
             debugShowCheckedModeBanner: false,
-            theme: ModernTheme.lightTheme,
-            darkTheme: ModernTheme.darkTheme,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
             themeMode: appState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             home: const AuthWrapper(),
             routes: {
